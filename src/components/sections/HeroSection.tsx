@@ -21,8 +21,7 @@ const HeroSection: React.FC = () => {
             <Link to="/auth/signup">Try it Now</Link>
           </Button>
           <Button 
-            variant="outline" 
-            className="border-smarttext-light text-smarttext-light hover:bg-smarttext-light/10 w-full sm:w-auto px-8 py-6 text-lg button-hover"
+            className="bg-smarttext-light text-smarttext-navy border border-smarttext-gray hover:bg-[#E2E8F0] w-full sm:w-auto px-8 py-6 text-lg font-bold button-hover"
             asChild
           >
             <a href="#contact">Book a Demo</a>
