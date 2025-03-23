@@ -7,74 +7,74 @@
 
 @layer base {
   :root {
-    --background: 210 30% 98%;
-    --foreground: 215 32% 12%;
+    --background: 210 40% 98%;
+    --foreground: 215 25% 27%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 32% 12%;
+    --card-foreground: 215 25% 27%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 32% 12%;
+    --popover-foreground: 215 25% 27%;
 
-    --primary: 239 84% 67%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 239 84% 67%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 215 25% 27%;
 
-    --muted: 210 30% 96%;
+    --muted: 214 32% 91%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 239 75% 75%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 215 32% 12%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 239 84% 67%;
+    --sidebar-background: 215 25% 27%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 18%;
+    --sidebar-accent: 217 25% 32%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 220 35% 20%;
-    --sidebar-ring: 239 84% 67%;
+    --sidebar-border: 217 25% 32%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 20% 92%;
+    --background: 215 25% 27%;
+    --foreground: 210 40% 98%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 20% 92%;
+    --card: 215 25% 27%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 20% 92%;
+    --popover: 215 25% 27%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 239 84% 67%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 30% 18%;
-    --secondary-foreground: 210 20% 92%;
+    --secondary: 217 25% 32%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 30% 18%;
-    --muted-foreground: 210 20% 60%;
+    --muted: 217 25% 32%;
+    --muted-foreground: 210 30% 86%;
 
-    --accent: 239 84% 67%;
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 92%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 220 35% 20%;
-    --input: 220 35% 20%;
-    --ring: 210 20% 92%;
+    --border: 217 25% 32%;
+    --input: 217 25% 32%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -114,7 +114,7 @@
   }
 
   .hero-gradient {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
   }
 
   .nav-link {
@@ -122,11 +122,11 @@
   }
 
   .feature-card {
-    @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100;
+    @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-smarttext-gray/20;
   }
 
   .industry-card {
-    @apply bg-smarttext-slate rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply bg-smarttext-navy rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
   }
 
   .pricing-card {

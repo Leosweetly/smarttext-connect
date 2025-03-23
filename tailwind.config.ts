@@ -72,13 +72,15 @@ export default {
 				},
 				// SmartText AI updated colors
 				smarttext: {
-					navy: '#0F172A',
-					slate: '#1E293B',
-					primary: '#6366F1',
-					hover: '#818CF8',
-					light: '#F1F5F9',
-					success: '#10B981',
-					white: '#E2E8F0',
+					navy: '#1E293B', // Primary Dark
+					slate: '#475569', // Darker Secondary Gray
+					primary: '#3B82F6', // Primary Accent
+					hover: '#60A5FA', // Hover Accent
+					success: '#22C55E', // Success
+					warning: '#F59E0B', // Warning
+					light: '#F8FAFC', // Background Light
+					white: '#F1F5F9', // Text on Dark
+					gray: '#CBD5E1', // Secondary Gray
 				}
 			},
 			borderRadius: {
