@@ -70,13 +70,15 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// SmartText AI colors
+				// SmartText AI updated colors
 				smarttext: {
-					navy: '#0D1B2A',
-					slate: '#1B263B',
-					primary: '#415A77',
-					hover: '#778DA9',
-					light: '#E0E1DD',
+					navy: '#0F172A',
+					slate: '#1E293B',
+					primary: '#6366F1',
+					hover: '#818CF8',
+					light: '#F1F5F9',
+					success: '#10B981',
+					white: '#E2E8F0',
 				}
 			},
 			borderRadius: {

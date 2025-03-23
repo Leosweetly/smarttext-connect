@@ -13,8 +13,8 @@ const Logo: React.FC<LogoProps> = ({ variant = 'light', className }) => {
     <Link 
       to="/" 
       className={cn(
-        "font-bold tracking-wider text-2xl flex items-center", 
-        variant === 'light' ? 'text-smarttext-light' : 'text-smarttext-navy',
+        "font-bold tracking-wider text-2xl flex items-center transition-opacity duration-200 hover:opacity-90", 
+        variant === 'light' ? 'text-smarttext-white' : 'text-smarttext-navy',
         className
       )}
     >
