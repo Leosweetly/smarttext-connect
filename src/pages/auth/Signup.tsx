@@ -1,27 +1,65 @@
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/ui/Logo';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 const Signup: React.FC = () => {
   const { toast } = useToast();
+  const { signup } = useAuth();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    businessName: '',
+    email: '',
+    password: '',
+  });
+  
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // This would be replaced with actual Auth0 integration
-    toast({
-      title: "Account Created",
-      description: "Welcome to SmartText AI! Redirecting to dashboard...",
-    });
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     
-    // For demo purposes, simulate redirection after 2 seconds
-    setTimeout(() => {
-      window.location.href = '/dashboard';
-    }, 2000);
+    try {
+      // Show toast notification
+      toast({
+        title: "Account Created",
+        description: "Welcome to SmartText AI! Redirecting to onboarding...",
+      });
+      
+      // Sign up the user (this will redirect to onboarding)
+      await signup(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.businessName
+      );
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem creating your account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -48,19 +86,23 @@ const Signup: React.FC = () => {
               placeholder="John Smith"
               required
               className="w-full"
+              value={formData.name}
+              onChange={handleChange}
             />
           </div>
           
           <div className="space-y-2">
-            <label htmlFor="business" className="block text-sm font-medium text-smarttext-navy">
+            <label htmlFor="businessName" className="block text-sm font-medium text-smarttext-navy">
               Business Name
             </label>
             <Input
-              id="business"
+              id="businessName"
               type="text"
               placeholder="Acme Inc."
               required
               className="w-full"
+              value={formData.businessName}
+              onChange={handleChange}
             />
           </div>
           
@@ -74,6 +116,8 @@ const Signup: React.FC = () => {
               placeholder="you@example.com"
               required
               className="w-full"
+              value={formData.email}
+              onChange={handleChange}
             />
           </div>
           
@@ -87,10 +131,16 @@ const Signup: React.FC = () => {
               placeholder="Create a strong password"
               required
               className="w-full"
+              value={formData.password}
+              onChange={handleChange}
             />
           </div>
           
-          <Button type="submit" className="w-full bg-smarttext-primary hover:bg-smarttext-hover">
+          <Button 
+            type="submit" 
+            className="w-full bg-smarttext-primary hover:bg-smarttext-hover"
+            disabled={isSubmitting}
+          >
             Create Account
           </Button>
           

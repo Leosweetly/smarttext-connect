@@ -4,12 +4,24 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowUpRight, Users, MessageSquare, PhoneMissed, TrendingUp } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useOnboarding } from '@/hooks/use-onboarding';
+import OnboardingBanner from '@/components/dashboard/OnboardingBanner';
+import SetupChecklist from '@/components/onboarding/SetupChecklist';
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
+  const { progress } = useOnboarding();
+  
+  // Show setup checklist in sidebar for incomplete onboarding
+  const showSetupChecklist = !progress.isComplete;
   return (
     <DashboardLayout>
+      {/* Onboarding banner */}
+      {showSetupChecklist && <OnboardingBanner />}
+      
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-smarttext-navy">Welcome, John Smith</h1>
+        <h1 className="text-2xl font-bold text-smarttext-navy">Welcome, {user?.name || 'User'}</h1>
         <p className="text-smarttext-slate">Here's what's happening with your business today</p>
       </div>
       
@@ -143,6 +155,13 @@ const Dashboard: React.FC = () => {
           </div>
         </Card>
       </div>
+      
+      {/* Setup checklist card (only shown if onboarding is not complete) */}
+      {showSetupChecklist && (
+        <div className="mt-8">
+          <SetupChecklist />
+        </div>
+      )}
     </DashboardLayout>
   );
 };

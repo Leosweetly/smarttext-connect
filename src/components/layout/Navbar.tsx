@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { HashLink as Link } from 'react-router-hash-link';
 import { Menu, X } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
 import { Button } from '@/components/ui/button';
@@ -33,9 +33,9 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Menu */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/#features" className="nav-link text-smarttext-light">Features</Link>
-          <Link to="/#industries" className="nav-link text-smarttext-light">Industries</Link>
-          <Link to="/#pricing" className="nav-link text-smarttext-light">Pricing</Link>
+          <Link to="#features" className="nav-link text-smarttext-light">Features</Link>
+          <Link to="#industries" className="nav-link text-smarttext-light">Industries</Link>
+          <Link to="#pricing" className="nav-link text-smarttext-light">Pricing</Link>
           <Link to="/auth/login" className="nav-link text-smarttext-light">Login</Link>
           <Button asChild className="bg-smarttext-primary hover:bg-smarttext-hover button-hover">
             <Link to="/auth/signup">Try it Now</Link>
@@ -61,21 +61,21 @@ const Navbar: React.FC = () => {
       >
         <nav className="flex flex-col space-y-6">
           <Link 
-            to="/#features" 
+            to="#features" 
             className="text-xl text-smarttext-light border-b border-smarttext-primary/20 pb-4"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Features
           </Link>
           <Link 
-            to="/#industries" 
+            to="#industries" 
             className="text-xl text-smarttext-light border-b border-smarttext-primary/20 pb-4"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Industries
           </Link>
           <Link 
-            to="/#pricing" 
+            to="#pricing" 
             className="text-xl text-smarttext-light border-b border-smarttext-primary/20 pb-4"
             onClick={() => setIsMobileMenuOpen(false)}
           >

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { Button } from '@/components/ui/button';
 
 const HeroSection: React.FC = () => {
@@ -24,7 +25,7 @@ const HeroSection: React.FC = () => {
             className="bg-smarttext-light text-smarttext-navy border border-smarttext-gray hover:bg-[#E2E8F0] w-full sm:w-auto px-8 py-6 text-lg font-bold button-hover"
             asChild
           >
-            <a href="#contact">Book a Demo</a>
+            <HashLink to="#contact">Book a Demo</HashLink>
           </Button>
         </div>
       </div>

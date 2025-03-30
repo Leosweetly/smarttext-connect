@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import Logo from '@/components/ui/Logo';
 
 const Footer: React.FC = () => {
@@ -19,8 +20,8 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-bold mb-4">Company</h3>
             <ul className="space-y-2">
               <li><Link to="/" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Home</Link></li>
-              <li><Link to="/#features" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Features</Link></li>
-              <li><Link to="/#pricing" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Pricing</Link></li>
+              <li><HashLink to="#features" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Features</HashLink></li>
+              <li><HashLink to="#pricing" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Pricing</HashLink></li>
               <li><a href="mailto:info@getsmarttext.com" className="text-smarttext-hover hover:text-smarttext-light transition-colors">Contact</a></li>
             </ul>
           </div>
