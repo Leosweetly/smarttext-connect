@@ -75,7 +75,7 @@ const defaultOnboardingProgress: OnboardingProgress = {
 // Define the shape of our onboarding context
 interface OnboardingContextType {
   progress: OnboardingProgress;
-  updateBusinessInfo: (info: Partial<OnboardingProgress['businessInfo']>) => void;
+  updateBusinessInfo: (info: Partial<OnboardingProgress['businessInfo']>) => Promise<boolean>;
   updateCommunicationSetup: (info: Partial<OnboardingProgress['communicationSetup']>) => void;
   updateMessageTemplates: (info: Partial<OnboardingProgress['messageTemplates']>) => void;
   goToNextStep: () => void;
@@ -90,7 +90,7 @@ interface OnboardingContextType {
 // Create the onboarding context with a default value
 const OnboardingContext = createContext<OnboardingContextType>({
   progress: defaultOnboardingProgress,
-  updateBusinessInfo: () => {},
+  updateBusinessInfo: async () => Promise.resolve(true),
   updateCommunicationSetup: () => {},
   updateMessageTemplates: () => {},
   goToNextStep: () => {},
@@ -135,17 +135,95 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
   }, [progress]);
 
   // Update business info
-  const updateBusinessInfo = (info: Partial<OnboardingProgress['businessInfo']>) => {
-    setProgress(prev => ({
-      ...prev,
-      businessInfo: {
-        ...prev.businessInfo,
-        ...info,
-      },
-      completedSteps: prev.completedSteps.includes(OnboardingStep.BUSINESS_INFO)
-        ? prev.completedSteps
-        : [...prev.completedSteps, OnboardingStep.BUSINESS_INFO],
-    }));
+  const updateBusinessInfo = async (info: Partial<OnboardingProgress['businessInfo']>) => {
+    try {
+      console.log('useOnboarding: updateBusinessInfo called with:', info);
+      
+      // Update local state first
+      setProgress(prev => ({
+        ...prev,
+        businessInfo: {
+          ...prev.businessInfo,
+          ...info,
+        },
+        completedSteps: prev.completedSteps.includes(OnboardingStep.BUSINESS_INFO)
+          ? prev.completedSteps
+          : [...prev.completedSteps, OnboardingStep.BUSINESS_INFO],
+      }));
+      
+      console.log('useOnboarding: local state updated');
+
+      // Get record ID from localStorage if it exists
+      const recordId = localStorage.getItem('airtable_business_id');
+      console.log('useOnboarding: recordId from localStorage:', recordId);
+
+      try {
+        // Send data to API
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const apiUrl = `${baseUrl}/api/update-business-info`;
+        console.log('useOnboarding: sending data to API at:', apiUrl);
+        
+        // Prepare request data
+        const requestData = {
+          name: info.name || progress.businessInfo.name,
+          industry: info.industry || progress.businessInfo.industry,
+          size: info.size || progress.businessInfo.size,
+          website: info.website || progress.businessInfo.website,
+          recordId: recordId || undefined,
+        };
+        
+        console.log('useOnboarding: request data:', requestData);
+        
+        // Make the API call
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+        
+        console.log('useOnboarding: API response status:', response.status);
+
+        // Parse the response
+        const result = await response.json();
+        console.log('useOnboarding: API response data:', result);
+        
+        if (!response.ok) {
+          console.error('useOnboarding: API error:', result.error || 'Unknown error');
+          
+          // Show error in console with more details
+          if (result.debug) {
+            console.error('useOnboarding: API error details:', result.debug);
+          }
+          
+          // Don't throw here - we'll handle the error but continue the flow
+        } else {
+          console.log('useOnboarding: API call successful');
+          
+          // Save record ID to localStorage
+          if (result.id) {
+            localStorage.setItem('airtable_business_id', result.id);
+            console.log('useOnboarding: saved recordId to localStorage:', result.id);
+          } else {
+            console.warn('useOnboarding: No record ID returned from API');
+          }
+        }
+      } catch (apiError: any) {
+        console.error('useOnboarding: API call failed:', apiError.message || apiError);
+        console.error('useOnboarding: API call stack:', apiError.stack);
+        // We don't want to block the onboarding flow if the API call fails
+        // Log the error but continue
+      }
+
+      // Always return true to allow navigation to continue
+      return true;
+    } catch (error) {
+      console.error('useOnboarding: Error in updateBusinessInfo:', error);
+      // We don't want to block the onboarding flow if there's an error
+      // So we still return true to allow the user to continue
+      return true;
+    }
   };
 
   // Update communication setup
@@ -178,18 +256,26 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
 
   // Navigate to the next step
   const goToNextStep = () => {
+    console.log('useOnboarding: goToNextStep called');
     const steps = Object.values(OnboardingStep);
     const currentIndex = steps.indexOf(progress.currentStep);
+    console.log('useOnboarding: current step:', progress.currentStep, 'index:', currentIndex);
     
     if (currentIndex < steps.length - 1) {
       const nextStep = steps[currentIndex + 1];
+      console.log('useOnboarding: navigating to next step:', nextStep);
+      
       setProgress(prev => ({
         ...prev,
         currentStep: nextStep,
       }));
+      
+      console.log('useOnboarding: calling navigate to:', `/onboarding/${nextStep}`);
       navigate(`/onboarding/${nextStep}`);
+      console.log('useOnboarding: navigate called');
     } else {
       // If we're at the last step, complete onboarding
+      console.log('useOnboarding: at last step, completing onboarding');
       completeOnboarding();
     }
   };

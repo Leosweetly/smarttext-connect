@@ -113,12 +113,25 @@ const CommunicationSetup: React.FC = () => {
   };
   
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log('CommunicationSetup: handleSubmit called');
+    
     if (validateForm()) {
-      updateCommunicationSetup(communicationSetup);
-      return true;
+      console.log('CommunicationSetup: form validation passed');
+      try {
+        console.log('CommunicationSetup: calling updateCommunicationSetup with:', communicationSetup);
+        updateCommunicationSetup(communicationSetup);
+        console.log('CommunicationSetup: updateCommunicationSetup completed successfully');
+        return true;
+      } catch (error) {
+        console.error('CommunicationSetup: Error submitting communication setup:', error);
+        // Still return true to allow the user to continue even if there's an error
+        return true;
+      }
+    } else {
+      console.log('CommunicationSetup: form validation failed');
+      return false;
     }
-    return false;
   };
   
   // If not authenticated, redirect to login
@@ -158,7 +171,7 @@ const CommunicationSetup: React.FC = () => {
       description="Configure your business hours and response preferences"
       currentStep={OnboardingStep.COMMUNICATION_SETUP}
     >
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         <div className="space-y-2">
           <Label htmlFor="phone">Business Phone Number</Label>
           <Input
@@ -269,7 +282,7 @@ const CommunicationSetup: React.FC = () => {
           </p>
         </div>
         
-        <StepNavigation onNext={() => handleSubmit()} />
+        <StepNavigation onNext={handleSubmit} />
       </form>
     </OnboardingLayout>
   );

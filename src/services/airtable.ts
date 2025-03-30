@@ -22,26 +22,64 @@ interface BusinessData {
 // Function to save business data to Airtable via backend API
 export const saveBusinessToAirtable = async (data: BusinessData): Promise<{ success: boolean; id?: string }> => {
   try {
+    console.log('airtable.ts: saveBusinessToAirtable called with:', data);
+    
+    // Get record ID from localStorage if it exists
+    const recordId = localStorage.getItem('airtable_business_id');
+    console.log('airtable.ts: recordId from localStorage:', recordId);
+    
     const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    const response = await fetch(`${baseUrl}/api/onboarding`, {
+    const apiUrl = `${baseUrl}/api/update-business-info`;
+    console.log('airtable.ts: sending data to API at:', apiUrl);
+    
+    // Prepare request data
+    const requestData = {
+      name: data.name,
+      industry: data.industry,
+      size: data.size,
+      website: data.website || '',
+      recordId: recordId || data.id,
+    };
+    
+    console.log('airtable.ts: request data:', requestData);
+    
+    // Make the API call
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(requestData),
     });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
+    
+    console.log('airtable.ts: API response status:', response.status);
+    
+    // Parse the response
     const result = await response.json();
+    console.log('airtable.ts: API response data:', result);
+    
+    if (!response.ok) {
+      console.error('airtable.ts: API error:', result.error || 'Unknown error');
+      
+      if (result.debug) {
+        console.error('airtable.ts: API error details:', result.debug);
+      }
+      
+      throw new Error(result.error || `API error: ${response.status}`);
+    }
+    
+    // Save record ID to localStorage
+    if (result.id) {
+      localStorage.setItem('airtable_business_id', result.id);
+      console.log('airtable.ts: saved recordId to localStorage:', result.id);
+    }
+    
     return {
       success: true,
       id: result.id || data.id,
     };
-  } catch (error) {
-    console.error('Error saving business data to Airtable:', error);
+  } catch (error: any) {
+    console.error('airtable.ts: Error saving business data to Airtable:', error.message || error);
     return {
       success: false,
     };

@@ -105,12 +105,25 @@ const MessageTemplates: React.FC = () => {
   };
   
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log('MessageTemplates: handleSubmit called');
+    
     if (validateForm()) {
-      updateMessageTemplates(messageTemplates);
-      return true;
+      console.log('MessageTemplates: form validation passed');
+      try {
+        console.log('MessageTemplates: calling updateMessageTemplates with:', messageTemplates);
+        updateMessageTemplates(messageTemplates);
+        console.log('MessageTemplates: updateMessageTemplates completed successfully');
+        return true;
+      } catch (error) {
+        console.error('MessageTemplates: Error submitting message templates:', error);
+        // Still return true to allow the user to continue even if there's an error
+        return true;
+      }
+    } else {
+      console.log('MessageTemplates: form validation failed');
+      return false;
     }
-    return false;
   };
   
   // If not authenticated, redirect to login
@@ -174,7 +187,7 @@ const MessageTemplates: React.FC = () => {
       description="Customize your automated messages to match your brand voice"
       currentStep={OnboardingStep.MESSAGE_TEMPLATES}
     >
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         <div className="space-y-2">
           <Label htmlFor="greeting">Greeting Message</Label>
           <Textarea
@@ -284,7 +297,7 @@ const MessageTemplates: React.FC = () => {
           </p>
         </div>
         
-        <StepNavigation onNext={() => handleSubmit()} />
+        <StepNavigation onNext={handleSubmit} />
       </form>
     </OnboardingLayout>
   );

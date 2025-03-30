@@ -1,69 +1,70 @@
-# Welcome to your Lovable project
+# SmartText Connect
+
+A business messaging platform that helps businesses communicate with their customers via text messaging.
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/042fcef5-06a8-48ac-b475-ebd6faa59224
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/042fcef5-06a8-48ac-b475-ebd6faa59224) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
+This project is built with:
 
 - Vite
 - TypeScript
 - React
 - shadcn-ui
 - Tailwind CSS
+- Vercel API Routes
+- Airtable Integration
 
-## How can I deploy this project?
+## Development
 
-Simply open [Lovable](https://lovable.dev/projects/042fcef5-06a8-48ac-b475-ebd6faa59224) and click on Share -> Publish.
+To run the project locally:
 
-## I want to use a custom domain - is that possible?
+```sh
+# Install dependencies
+npm install
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+# Start the development server
+npm run dev
+```
+
+## Deployment
+
+This project is configured for deployment on Vercel. The `vercel.json` file includes configuration for API routes and client-side routing.
+
+### Environment Variables
+
+The following environment variables need to be set in your Vercel project settings:
+
+- `VITE_API_BASE_URL`: https://smarttext-ai.vercel.app
+- `AIRTABLE_PAT`: patQey3tj5Jwilg6M.51a988866211150099fc779cb59e95446eb61584082b5ad8b73511f0d3ed3da3
+- `AIRTABLE_BASE_ID`:appl19GgA8hdPkUR0
+
+To set these in Vercel:
+
+1. Go to your project in the Vercel dashboard
+2. Navigate to Settings > Environment Variables
+3. Add each variable with its corresponding value
+4. Redeploy your application for the changes to take effect
+
+## Project Structure
+
+- `/src/components`: UI components
+- `/src/hooks`: Custom React hooks
+- `/src/pages`: Page components and API routes
+- `/src/services`: Service modules for external APIs
+
+## API Routes
+
+The project includes serverless API routes in the `/src/pages/api` directory:
+
+- `/api/update-business-info`: Updates business information in Airtable
+
+## Onboarding Flow
+
+The onboarding process consists of four steps:
+
+1. Business Info: Collect basic business information
+2. Communication Setup: Configure business hours and response preferences
+3. Message Templates: Set up automated message templates
+4. Feature Tour: Guide users through the platform features
+
+Each step saves data to Airtable via the API routes.

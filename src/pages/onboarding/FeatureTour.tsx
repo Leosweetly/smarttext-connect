@@ -83,30 +83,46 @@ const FeatureTour: React.FC = () => {
   
   // Handle completion
   const handleComplete = async () => {
-    if (isSubmitting) return;
+    console.log('FeatureTour: handleComplete called');
+    
+    if (isSubmitting) {
+      console.log('FeatureTour: already submitting, returning');
+      return;
+    }
     
     setIsSubmitting(true);
+    console.log('FeatureTour: isSubmitting set to true');
     
     try {
       // Save business data to Airtable
+      console.log('FeatureTour: preparing to save business data to Airtable');
       const businessData = onboardingToBusinessData(progress);
+      console.log('FeatureTour: business data prepared:', businessData);
       await saveBusinessToAirtable(businessData);
+      console.log('FeatureTour: business data saved to Airtable');
       
       // Send confirmation email
       if (user?.email) {
+        console.log('FeatureTour: sending confirmation email to:', user.email);
         await sendOnboardingCompletionEmail(user.email, user.businessName);
+        console.log('FeatureTour: confirmation email sent');
       }
       
       // Mark onboarding as complete
+      console.log('FeatureTour: marking onboarding as complete');
       completeOnboarding();
+      console.log('FeatureTour: onboarding marked as complete');
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      console.error('FeatureTour: Error completing onboarding:', error);
       // Still mark as complete even if there's an error with external services
+      console.log('FeatureTour: marking onboarding as complete despite error');
       completeOnboarding();
     } finally {
       setIsSubmitting(false);
+      console.log('FeatureTour: isSubmitting set to false');
     }
     
+    console.log('FeatureTour: handleComplete returning true');
     return true;
   };
   

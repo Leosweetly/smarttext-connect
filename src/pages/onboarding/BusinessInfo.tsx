@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
@@ -82,12 +83,25 @@ const BusinessInfo: React.FC = () => {
   };
   
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log('BusinessInfo: handleSubmit called');
+    
     if (validateForm()) {
-      updateBusinessInfo(businessInfo);
-      return true;
+      console.log('BusinessInfo: form validation passed');
+      try {
+        console.log('BusinessInfo: calling updateBusinessInfo with:', businessInfo);
+        await updateBusinessInfo(businessInfo);
+        console.log('BusinessInfo: updateBusinessInfo completed successfully');
+        return true;
+      } catch (error) {
+        console.error('BusinessInfo: Error submitting business info:', error);
+        // Still return true to allow the user to continue even if the API call fails
+        return true;
+      }
+    } else {
+      console.log('BusinessInfo: form validation failed');
+      return false;
     }
-    return false;
   };
   
   // If not authenticated, redirect to login
@@ -106,7 +120,7 @@ const BusinessInfo: React.FC = () => {
       description="This information helps us personalize your experience"
       currentStep={OnboardingStep.BUSINESS_INFO}
     >
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         <div className="space-y-2">
           <Label htmlFor="name">Business Name</Label>
           <Input
@@ -188,7 +202,7 @@ const BusinessInfo: React.FC = () => {
         </div>
         
         <StepNavigation
-          onNext={() => handleSubmit()}
+          onNext={handleSubmit}
           isBackDisabled={true}
         />
       </form>
