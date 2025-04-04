@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
@@ -51,11 +52,11 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
       isComplete: isStepComplete(OnboardingStep.MESSAGE_TEMPLATES),
     },
     {
-      id: 'feature-tour',
-      label: 'Complete Feature Tour',
-      description: 'Learn how to use the dashboard effectively',
-      step: OnboardingStep.FEATURE_TOUR,
-      isComplete: isStepComplete(OnboardingStep.FEATURE_TOUR),
+      id: 'subscription-setup',
+      label: 'Activate Subscription',
+      description: 'Start your 14-day trial of SmartText AI Pro',
+      step: OnboardingStep.SUBSCRIPTION_SETUP,
+      isComplete: isStepComplete(OnboardingStep.SUBSCRIPTION_SETUP),
     },
   ];
 

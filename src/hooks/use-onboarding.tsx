@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from './use-auth';
@@ -8,7 +7,7 @@ export enum OnboardingStep {
   BUSINESS_INFO = 'business-info',
   COMMUNICATION_SETUP = 'communication-setup',
   MESSAGE_TEMPLATES = 'message-templates',
-  FEATURE_TOUR = 'feature-tour',
+  SUBSCRIPTION_SETUP = 'subscription-setup',
 }
 
 // Define the shape of our onboarding progress

@@ -1,3 +1,4 @@
+
 import React, { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
     { id: OnboardingStep.BUSINESS_INFO, label: 'Business Info' },
     { id: OnboardingStep.COMMUNICATION_SETUP, label: 'Communication' },
     { id: OnboardingStep.MESSAGE_TEMPLATES, label: 'Templates' },
-    { id: OnboardingStep.FEATURE_TOUR, label: 'Tour' },
+    { id: OnboardingStep.SUBSCRIPTION_SETUP, label: 'Subscription' },
   ];
 
   // Calculate the current step index

@@ -25,7 +25,7 @@ import OnboardingIndex from "./pages/onboarding/Index";
 import BusinessInfo from "./pages/onboarding/BusinessInfo";
 import CommunicationSetup from "./pages/onboarding/CommunicationSetup";
 import MessageTemplates from "./pages/onboarding/MessageTemplates";
-import FeatureTour from "./pages/onboarding/FeatureTour";
+import SubscriptionSetup from "./pages/onboarding/SubscriptionSetup";
 
 // Checkout Pages
 import ProTrial from "./pages/checkout/ProTrial";
@@ -57,7 +57,7 @@ const App = () => (
               <Route path="/onboarding/business-info" element={<BusinessInfo />} />
               <Route path="/onboarding/communication-setup" element={<CommunicationSetup />} />
               <Route path="/onboarding/message-templates" element={<MessageTemplates />} />
-              <Route path="/onboarding/feature-tour" element={<FeatureTour />} />
+              <Route path="/onboarding/subscription-setup" element={<SubscriptionSetup />} />
               
               {/* Dashboard routes */}
               <Route path="/dashboard" element={<Dashboard />} />
