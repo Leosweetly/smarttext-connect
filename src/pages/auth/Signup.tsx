@@ -40,16 +40,18 @@ const Signup: React.FC = () => {
       // Show toast notification
       toast({
         title: "Account Created",
-        description: "Welcome to SmartText AI! Redirecting to onboarding...",
+        description: "Welcome to SmartText AI! Setting up your account...",
       });
       
-      // Sign up the user (this will redirect to onboarding)
+      // Sign up the user (this will now redirect to checkout)
       await signup(
         formData.name,
         formData.email,
         formData.password,
         formData.businessName
       );
+      
+      // Note: Navigation to checkout is now handled in the useAuth hook
     } catch (error) {
       console.error('Signup error:', error);
       toast({
@@ -57,7 +59,6 @@ const Signup: React.FC = () => {
         description: "There was a problem creating your account. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -141,7 +142,7 @@ const Signup: React.FC = () => {
             className="w-full bg-smarttext-primary hover:bg-smarttext-hover"
             disabled={isSubmitting}
           >
-            Create Account
+            {isSubmitting ? "Creating Account..." : "Create Account"}
           </Button>
           
           <p className="text-xs text-smarttext-slate text-center mt-4">

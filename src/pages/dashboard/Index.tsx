@@ -1,22 +1,33 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowUpRight, Users, MessageSquare, PhoneMissed, TrendingUp } from 'lucide-react';
+import { ArrowUpRight, Users, MessageSquare, PhoneMissed, TrendingUp, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useOnboarding } from '@/hooks/use-onboarding';
 import OnboardingBanner from '@/components/dashboard/OnboardingBanner';
 import SetupChecklist from '@/components/onboarding/SetupChecklist';
+import SubscriptionBanner from '@/components/dashboard/SubscriptionBanner';
+import { format } from 'date-fns';
 
 const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, refreshSubscriptionStatus } = useAuth();
   const { progress } = useOnboarding();
+  
+  // Refresh subscription status on load
+  useEffect(() => {
+    refreshSubscriptionStatus();
+  }, [refreshSubscriptionStatus]);
   
   // Show setup checklist in sidebar for incomplete onboarding
   const showSetupChecklist = !progress.isComplete;
+  
   return (
     <DashboardLayout>
+      {/* Trial or subscription status banner */}
+      <SubscriptionBanner />
+      
       {/* Onboarding banner */}
       {showSetupChecklist && <OnboardingBanner />}
       

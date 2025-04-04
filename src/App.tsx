@@ -27,6 +27,9 @@ import CommunicationSetup from "./pages/onboarding/CommunicationSetup";
 import MessageTemplates from "./pages/onboarding/MessageTemplates";
 import FeatureTour from "./pages/onboarding/FeatureTour";
 
+// Checkout Pages
+import ProTrial from "./pages/checkout/ProTrial";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -45,6 +48,9 @@ const App = () => (
               <Route path="/auth/forgot-password" element={<ForgotPassword />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              
+              {/* Checkout routes */}
+              <Route path="/checkout/pro-trial" element={<ProTrial />} />
               
               {/* Onboarding routes */}
               <Route path="/onboarding" element={<OnboardingIndex />} />

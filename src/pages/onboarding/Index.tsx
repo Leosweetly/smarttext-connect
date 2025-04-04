@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { OnboardingStep, useOnboarding } from '@/hooks/use-onboarding';
@@ -12,11 +13,17 @@ const OnboardingIndex: React.FC = () => {
   const navigate = useNavigate();
 
   // Redirect to the current step if there's an active onboarding session
+  // or to business-info directly if from signup/checkout flow
   useEffect(() => {
-    if (!isLoading && progress.currentStep) {
-      navigate(`/onboarding/${progress.currentStep}`);
+    if (!isLoading) {
+      if (progress.currentStep) {
+        navigate(`/onboarding/${progress.currentStep}`);
+      } else if (user?.isFirstLogin) {
+        // If user is coming from signup/checkout, send them directly to business info
+        goToStep(OnboardingStep.BUSINESS_INFO);
+      }
     }
-  }, [isLoading, progress.currentStep, navigate]);
+  }, [isLoading, progress.currentStep, navigate, user, goToStep]);
 
   // If not authenticated, redirect to login
   if (!isLoading && !isAuthenticated) {

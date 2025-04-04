@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +9,12 @@ interface User {
   email: string;
   businessName: string;
   isFirstLogin: boolean;
+  subscription: {
+    status: 'trialing' | 'active' | 'past_due' | 'canceled' | 'incomplete' | null;
+    trialEndsAt: string | null;
+    currentPeriodEnd: string | null;
+    plan: 'core' | 'pro' | 'growth' | null;
+  };
 }
 
 // Define the shape of our auth context
@@ -20,6 +27,7 @@ interface AuthContextType {
   logout: () => void;
   completeOnboarding: () => void;
   skipOnboarding: () => void;
+  refreshSubscriptionStatus: () => Promise<void>;
 }
 
 // Create the auth context with a default value
@@ -32,6 +40,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   completeOnboarding: () => {},
   skipOnboarding: () => {},
+  refreshSubscriptionStatus: async () => {},
 });
 
 // Auth provider component
@@ -53,17 +62,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
+  // Refresh subscription status from API
+  const refreshSubscriptionStatus = async () => {
+    if (!user) return;
+    
+    try {
+      // This would be replaced with actual API call to get subscription details
+      // For now, we'll simulate an API response
+      const mockSubscriptionStatus = {
+        status: 'trialing' as const,
+        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        plan: 'pro' as const
+      };
+
+      // Update user with subscription info
+      const updatedUser = {
+        ...user,
+        subscription: mockSubscriptionStatus
+      };
+      
+      localStorage.setItem('smarttext_user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Failed to refresh subscription status:', error);
+    }
+  };
+
   // Login function
   const login = async (email: string, password: string) => {
     try {
       // This would be replaced with actual API call
-      // For now, we'll simulate a successful login
       const mockUser: User = {
         id: 'user-123',
         name: 'John Smith',
         email,
         businessName: 'Acme Inc.',
-        isFirstLogin: false, // Existing users aren't on first login
+        isFirstLogin: false,
+        subscription: {
+          status: 'active',
+          trialEndsAt: null,
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          plan: 'pro'
+        }
       };
 
       // Store user in localStorage
@@ -80,21 +121,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signup = async (name: string, email: string, password: string, businessName: string) => {
     try {
       // This would be replaced with actual API call
-      // For now, we'll simulate a successful signup
       const mockUser: User = {
         id: 'user-' + Date.now(),
         name,
         email,
         businessName,
-        isFirstLogin: true, // New users are on first login
+        isFirstLogin: true,
+        subscription: {
+          status: null,
+          trialEndsAt: null,
+          currentPeriodEnd: null,
+          plan: null
+        }
       };
 
       // Store user in localStorage
       localStorage.setItem('smarttext_user', JSON.stringify(mockUser));
       setUser(mockUser);
       
-      // Redirect to onboarding instead of dashboard
-      navigate('/onboarding');
+      // Redirect to checkout instead of onboarding
+      const checkoutUrl = "/checkout/pro-trial";
+      navigate(checkoutUrl);
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;
@@ -134,6 +181,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         logout,
         completeOnboarding,
         skipOnboarding,
+        refreshSubscriptionStatus
       }}
     >
       {children}

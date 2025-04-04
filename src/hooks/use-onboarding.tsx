@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from './use-auth';
@@ -153,10 +154,6 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
       
       console.log('useOnboarding: local state updated');
 
-      // Get record ID from localStorage if it exists
-      const recordId = localStorage.getItem('airtable_business_id');
-      console.log('useOnboarding: recordId from localStorage:', recordId);
-
       try {
         // Send data to API
         const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
@@ -169,7 +166,6 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
           industry: info.industry || progress.businessInfo.industry,
           size: info.size || progress.businessInfo.size,
           website: info.website || progress.businessInfo.website,
-          recordId: recordId || undefined,
         };
         
         console.log('useOnboarding: request data:', requestData);
@@ -191,27 +187,11 @@ export const OnboardingProvider = ({ children }: { children: React.ReactNode }) 
         
         if (!response.ok) {
           console.error('useOnboarding: API error:', result.error || 'Unknown error');
-          
-          // Show error in console with more details
-          if (result.debug) {
-            console.error('useOnboarding: API error details:', result.debug);
-          }
-          
-          // Don't throw here - we'll handle the error but continue the flow
         } else {
           console.log('useOnboarding: API call successful');
-          
-          // Save record ID to localStorage
-          if (result.id) {
-            localStorage.setItem('airtable_business_id', result.id);
-            console.log('useOnboarding: saved recordId to localStorage:', result.id);
-          } else {
-            console.warn('useOnboarding: No record ID returned from API');
-          }
         }
       } catch (apiError: any) {
         console.error('useOnboarding: API call failed:', apiError.message || apiError);
-        console.error('useOnboarding: API call stack:', apiError.stack);
         // We don't want to block the onboarding flow if the API call fails
         // Log the error but continue
       }

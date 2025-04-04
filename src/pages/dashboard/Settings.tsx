@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,20 +9,101 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { User, Bell, Shield, CreditCard, Save } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, Save, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { format, parseISO } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings: React.FC = () => {
+  const { user, refreshSubscriptionStatus } = useAuth();
+  const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
+  
+  // Get the active tab from the URL hash
+  const hash = location.hash.replace('#', '');
+  const defaultTab = ['profile', 'notifications', 'security', 'billing'].includes(hash) ? hash : 'profile';
+  
   const [profileForm, setProfileForm] = useState({
     firstName: 'John',
     lastName: 'Smith',
-    email: 'john.smith@example.com',
+    email: user?.email || 'john.smith@example.com',
     phone: '(555) 123-4567',
-    company: 'Smith Auto Shop'
+    company: user?.businessName || 'Smith Auto Shop'
   });
+
+  // Refresh subscription on mount
+  useEffect(() => {
+    refreshSubscriptionStatus();
+  }, [refreshSubscriptionStatus]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfileForm(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleSaveProfile = () => {
+    setIsUpdating(true);
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile information has been updated successfully."
+      });
+      setIsUpdating(false);
+    }, 1000);
+  };
+  
+  const handleCancelSubscription = () => {
+    setIsCanceling(true);
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Subscription Updated",
+        description: "Your subscription has been canceled. You'll have access until the end of your current period."
+      });
+      refreshSubscriptionStatus();
+      setIsCanceling(false);
+    }, 1500);
+  };
+  
+  // Helper to format subscription plan name
+  const formatPlanName = (plan: string | null) => {
+    if (!plan) return 'No Plan';
+    return plan.charAt(0).toUpperCase() + plan.slice(1);
+  };
+  
+  // Helper to get status badge styling
+  const getStatusBadge = (status: string | null) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'trialing':
+        return 'bg-blue-100 text-blue-800';
+      case 'past_due':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'canceled':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  const getStatusText = (status: string | null) => {
+    switch (status) {
+      case 'active':
+        return 'Active';
+      case 'trialing':
+        return 'Trial';
+      case 'past_due':
+        return 'Past Due';
+      case 'canceled':
+        return 'Canceled';
+      default:
+        return 'Inactive';
+    }
   };
 
   return (
@@ -30,7 +113,7 @@ const Settings: React.FC = () => {
         <p className="text-smarttext-slate">Manage your account settings and preferences</p>
       </div>
 
-      <Tabs defaultValue="profile" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full" onValueChange={(value) => navigate(`#${value}`)}>
         <TabsList className="mb-6 bg-gray-100">
           <TabsTrigger value="profile" className="data-[state=active]:bg-white">
             <User size={16} className="mr-2" />
@@ -109,9 +192,13 @@ const Settings: React.FC = () => {
               </div>
             </div>
             
-            <Button className="bg-smarttext-primary hover:bg-smarttext-hover">
+            <Button 
+              className="bg-smarttext-primary hover:bg-smarttext-hover"
+              onClick={handleSaveProfile}
+              disabled={isUpdating}
+            >
               <Save size={16} className="mr-2" />
-              Save Changes
+              {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
           </Card>
         </TabsContent>
@@ -231,17 +318,88 @@ const Settings: React.FC = () => {
             <div className="mb-8">
               <h3 className="text-lg font-medium text-smarttext-navy mb-4">Current Plan</h3>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                   <div>
-                    <span className="text-smarttext-primary font-bold">Pro Plan</span>
-                    <span className="text-smarttext-slate ml-2">($399/month)</span>
+                    <span className="text-smarttext-primary font-bold">
+                      {formatPlanName(user?.subscription?.plan || null)} Plan
+                    </span>
+                    <span className="text-smarttext-slate ml-2">
+                      ({user?.subscription?.plan === 'pro' ? '$399/month' : 
+                        user?.subscription?.plan === 'core' ? '$249/month' : 
+                        user?.subscription?.plan === 'growth' ? '$599+/month' : 'Free'})
+                    </span>
                   </div>
-                  <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Active</span>
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${getStatusBadge(user?.subscription?.status || null)}`}>
+                    {getStatusText(user?.subscription?.status || null)}
+                  </span>
                 </div>
-                <p className="text-sm text-smarttext-slate mb-4">Your next billing date is April 23, 2025</p>
+                
+                {user?.subscription?.trialEndsAt && (
+                  <div className="flex items-center mb-3 text-sm text-blue-700">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span>
+                      Trial ends on {format(parseISO(user.subscription.trialEndsAt), 'MMMM d, yyyy')}
+                    </span>
+                  </div>
+                )}
+                
+                {user?.subscription?.currentPeriodEnd && (
+                  <div className="flex items-center mb-4 text-sm text-smarttext-slate">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span>
+                      Next billing date: {format(parseISO(user.subscription.currentPeriodEnd), 'MMMM d, yyyy')}
+                    </span>
+                  </div>
+                )}
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span>
+                      {user?.subscription?.plan === 'pro' || user?.subscription?.plan === 'growth' ? 
+                        'Custom AI responses tailored to your business' : 
+                        'Auto-replies for missed calls'}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span>
+                      {user?.subscription?.plan === 'pro' || user?.subscription?.plan === 'growth' ? 
+                        'Lead capture form via text' : 
+                        'Pre-built industry text templates'}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-sm">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span>
+                      {user?.subscription?.plan === 'growth' ? 
+                        'Multi-location management' : 
+                        user?.subscription?.plan === 'pro' ? 
+                          'Built-in lead qualification flows' : 
+                          'Simple appointment booking via text'}
+                    </span>
+                  </div>
+                </div>
+                
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">Change Plan</Button>
-                  <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">Cancel Subscription</Button>
+                  {user?.subscription?.status === 'trialing' || user?.subscription?.status === 'active' ? (
+                    <>
+                      <Button variant="outline" size="sm">Change Plan</Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-red-500 border-red-200 hover:bg-red-50"
+                        onClick={handleCancelSubscription}
+                        disabled={isCanceling}
+                      >
+                        {isCanceling ? "Processing..." : "Cancel Subscription"}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button className="bg-smarttext-primary hover:bg-smarttext-hover" size="sm">
+                      Reactivate Subscription
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -260,7 +418,7 @@ const Settings: React.FC = () => {
                   <span className="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Default</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm">Add Payment Method</Button>
+              <Button variant="outline" size="sm">Update Payment Method</Button>
             </div>
           </Card>
         </TabsContent>
