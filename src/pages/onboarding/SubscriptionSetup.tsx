@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { OnboardingStep, useOnboarding } from '@/hooks/use-onboarding';
 import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
@@ -16,9 +16,10 @@ const SubscriptionSetup: React.FC = () => {
   const { isAuthenticated, isLoading, user, refreshSubscriptionStatus } = useAuth();
   const { progress, completeOnboarding } = useOnboarding();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Handle completion
+  // Handle completion and checkout
   const handleComplete = async () => {
     console.log('SubscriptionSetup: handleComplete called');
     
@@ -31,21 +32,45 @@ const SubscriptionSetup: React.FC = () => {
     console.log('SubscriptionSetup: isSubmitting set to true');
     
     try {
-      // Ensure subscription is active
-      if (!user?.subscription?.status) {
-        await activateTrial();
+      // Check if user already has an active subscription
+      if (user?.subscription?.status === 'active' || user?.subscription?.status === 'trialing') {
+        // Complete onboarding without checkout
+        console.log('SubscriptionSetup: user already has subscription, completing onboarding');
+        completeOnboarding();
+        return true;
       }
       
-      // Mark onboarding as complete
-      console.log('SubscriptionSetup: marking onboarding as complete');
-      completeOnboarding();
-      console.log('SubscriptionSetup: onboarding marked as complete');
-      return true;
+      // Create a checkout session via API
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessId: user?.id, // Send the user/business ID
+        }),
+      });
+      
+      console.log('SubscriptionSetup: API response status:', response.status);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create checkout session');
+      }
+      
+      // Get the checkout URL from the response
+      const { url } = await response.json();
+      console.log('SubscriptionSetup: Redirecting to Stripe checkout URL:', url);
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url;
+      return false; // Don't complete onboarding yet, wait for redirect and webhook
+      
     } catch (error) {
-      console.error('SubscriptionSetup: Error completing onboarding:', error);
+      console.error('SubscriptionSetup: Error creating checkout session:', error);
       toast({
-        title: "Error",
-        description: "There was an issue activating your subscription. Please try again.",
+        title: "Checkout Error",
+        description: error.message || "There was an issue setting up your subscription. Please try again.",
         variant: "destructive",
       });
       return false;
@@ -55,25 +80,44 @@ const SubscriptionSetup: React.FC = () => {
     }
   };
   
-  // Activate the trial subscription
+  // Activate the trial subscription (legacy method - now using API)
   const activateTrial = async () => {
     try {
-      // In a real app, this would call a backend API to create a Stripe checkout session
-      // For now, we'll simulate a successful payment
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsProcessing(true);
       
-      // Update user with trial subscription
-      await refreshSubscriptionStatus();
-      
-      toast({
-        title: "Subscription Activated",
-        description: "Your 14-day trial has started. Welcome to SmartText AI Pro!",
+      // Create a checkout session via API
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessId: user?.id, // Send the user/business ID
+        }),
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create checkout session');
+      }
+      
+      // Get the checkout URL from the response
+      const { url } = await response.json();
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url;
       
       return true;
     } catch (error) {
       console.error('Trial activation error:', error);
+      toast({
+        title: "Checkout Error",
+        description: error.message || "There was an issue setting up your subscription. Please try again.",
+        variant: "destructive",
+      });
       throw error;
+    } finally {
+      setIsProcessing(false);
     }
   };
   
@@ -296,15 +340,15 @@ const SubscriptionSetup: React.FC = () => {
         {/* Navigation */}
         <StepNavigation
           onNext={handleComplete}
-          isNextDisabled={isProcessing || !hasActiveSubscription}
+          isNextDisabled={isProcessing}
           isLastStep={true}
-          nextLabel="Complete Setup"
+          nextLabel={hasActiveSubscription ? "Complete Setup" : "Start Free Trial"}
         />
         
         {/* Loading indicator */}
         {isProcessing && (
           <div className="text-center text-sm text-smarttext-slate mt-4">
-            Finalizing your subscription and completing setup...
+            {hasActiveSubscription ? "Finalizing your subscription and completing setup..." : "Setting up your trial subscription..."}
           </div>
         )}
       </div>

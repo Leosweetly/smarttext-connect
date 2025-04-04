@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Shield, Check } from 'lucide-react';
 
 const ProTrial: React.FC = () => {
-  const { user, refreshSubscriptionStatus } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -25,25 +25,32 @@ const ProTrial: React.FC = () => {
     setIsProcessing(true);
     
     try {
-      // In a real app, this would call a backend API to create a Stripe checkout session
-      // For now, we'll simulate a successful payment
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Update user with trial subscription
-      await refreshSubscriptionStatus();
-      
-      toast({
-        title: "Subscription Activated",
-        description: "Your 14-day trial has started. Let's set up your account.",
+      // Create a checkout session via API
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          businessId: user?.id, // Send the user/business ID
+        }),
       });
       
-      // Redirect to business info page
-      navigate('/onboarding/business-info');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create checkout session');
+      }
+      
+      // Get the checkout URL from the response
+      const { url } = await response.json();
+      
+      // Redirect to Stripe Checkout
+      window.location.href = url;
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
         title: "Error",
-        description: "There was a problem processing your subscription. Please try again.",
+        description: error.message || "There was a problem processing your subscription. Please try again.",
         variant: "destructive",
       });
     } finally {
