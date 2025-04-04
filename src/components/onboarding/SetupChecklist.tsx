@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { OnboardingStep, useOnboarding } from '@/hooks/use-onboarding';
 import { cn } from '@/lib/utils';
+import { Briefcase, MessageSquare, FileText, Shield } from 'lucide-react';
 
 interface ChecklistItem {
   id: string;
@@ -12,6 +13,7 @@ interface ChecklistItem {
   description: string;
   step: OnboardingStep;
   isComplete: boolean;
+  icon: React.ReactNode;
 }
 
 interface SetupChecklistProps {
@@ -36,6 +38,7 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
       description: 'Add your business details and industry information',
       step: OnboardingStep.BUSINESS_INFO,
       isComplete: isStepComplete(OnboardingStep.BUSINESS_INFO),
+      icon: <Briefcase className="h-4 w-4" />
     },
     {
       id: 'communication-setup',
@@ -43,6 +46,7 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
       description: 'Configure business hours and response times',
       step: OnboardingStep.COMMUNICATION_SETUP,
       isComplete: isStepComplete(OnboardingStep.COMMUNICATION_SETUP),
+      icon: <MessageSquare className="h-4 w-4" />
     },
     {
       id: 'message-templates',
@@ -50,13 +54,15 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
       description: 'Personalize your automated responses',
       step: OnboardingStep.MESSAGE_TEMPLATES,
       isComplete: isStepComplete(OnboardingStep.MESSAGE_TEMPLATES),
+      icon: <FileText className="h-4 w-4" />
     },
     {
       id: 'subscription-setup',
-      label: 'Activate Subscription',
+      label: 'Get Started with Pro',
       description: 'Start your 14-day trial of SmartText AI Pro',
       step: OnboardingStep.SUBSCRIPTION_SETUP,
       isComplete: isStepComplete(OnboardingStep.SUBSCRIPTION_SETUP),
+      icon: <Shield className="h-4 w-4" />
     },
   ];
 
@@ -101,19 +107,21 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
               }
             }}
           >
-            {/* Checkbox */}
+            {/* Checkbox or Icon */}
             <div 
               className={cn(
-                "flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center mr-3 mt-0.5",
+                "flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3",
                 item.isComplete 
                   ? "border-green-500 bg-green-500 text-white" 
                   : "border-gray-300"
               )}
             >
-              {item.isComplete && (
+              {item.isComplete ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
+              ) : (
+                <span className="text-gray-500 text-xs">{item.icon}</span>
               )}
             </div>
 

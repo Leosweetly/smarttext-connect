@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/use-auth';
-import { Calendar, AlertTriangle } from 'lucide-react';
+import { Calendar, AlertTriangle, Shield } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
 const SubscriptionBanner: React.FC = () => {
@@ -24,7 +24,9 @@ const SubscriptionBanner: React.FC = () => {
     return (
       <Alert className="mb-6 bg-blue-50 border-blue-200">
         <div className="flex items-center">
-          <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+          <div className="bg-smarttext-primary/10 p-1 rounded-full mr-2">
+            <Shield className="h-4 w-4 text-smarttext-primary" />
+          </div>
           <AlertDescription className="text-blue-700">
             <span className="font-medium">Pro Trial Active</span>
             {' - '}

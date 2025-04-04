@@ -7,7 +7,8 @@ import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
 import StepNavigation from '@/components/onboarding/StepNavigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Shield, Briefcase, Rocket, Check } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -95,16 +96,74 @@ const SubscriptionSetup: React.FC = () => {
   
   return (
     <OnboardingLayout
-      title="Subscription Setup"
-      description="Activate your SmartText AI Pro subscription"
+      title="Choose Your Plan"
+      description="Select a plan that suits your business needs"
       currentStep={OnboardingStep.SUBSCRIPTION_SETUP}
       showSkip={false}
     >
       <div className="space-y-6">
-        <Card className="p-6 border-2 border-smarttext-primary">
+        {/* Core Plan */}
+        <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <Shield className="h-5 w-5 text-smarttext-primary mr-2" />
+              <div className="bg-gray-100 p-2 rounded-full mr-3">
+                <Briefcase className="h-5 w-5 text-gray-600" />
+              </div>
+              <h2 className="text-xl font-bold text-smarttext-navy">Core Plan</h2>
+            </div>
+            <div className="text-smarttext-navy font-bold">$249<span className="text-sm font-normal text-smarttext-slate">/month</span></div>
+          </div>
+          
+          <p className="text-sm text-smarttext-slate mb-4">For small businesses that need to stay responsive</p>
+          
+          <div className="mb-4">
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Auto-replies for missed calls</p>
+            </div>
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Pre-built industry text templates</p>
+            </div>
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Simple appointment booking via text</p>
+            </div>
+            <div className="flex items-start">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Email support</p>
+            </div>
+          </div>
+          
+          <Button 
+            variant="outline"
+            className="w-full"
+          >
+            Get Started
+          </Button>
+        </Card>
+        
+        {/* Pro Plan - Highlighted */}
+        <Card className="p-6 border-2 border-smarttext-primary relative">
+          <Badge 
+            className="absolute -top-3 right-4 bg-smarttext-primary text-white font-medium px-3"
+          >
+            Most Popular
+          </Badge>
+          
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="bg-smarttext-primary/10 p-2 rounded-full mr-3">
+                <Shield className="h-5 w-5 text-smarttext-primary" />
+              </div>
               <h2 className="text-xl font-bold text-smarttext-navy">Pro Plan</h2>
             </div>
             <div className="bg-smarttext-primary/10 text-smarttext-primary px-2 py-1 rounded text-sm font-medium">
@@ -112,7 +171,15 @@ const SubscriptionSetup: React.FC = () => {
             </div>
           </div>
           
+          <p className="text-sm text-smarttext-slate mb-4">For growing teams ready to personalize customer communication</p>
+          
           <div className="mb-4">
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Everything in Core</p>
+            </div>
             <div className="flex items-start mb-2">
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
@@ -169,6 +236,61 @@ const SubscriptionSetup: React.FC = () => {
           <p className="text-xs text-center text-smarttext-slate mt-4">
             You won't be charged during your trial. You can cancel anytime.
           </p>
+        </Card>
+        
+        {/* Growth Plan */}
+        <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center">
+              <div className="bg-purple-100 p-2 rounded-full mr-3">
+                <Rocket className="h-5 w-5 text-purple-600" />
+              </div>
+              <h2 className="text-xl font-bold text-smarttext-navy">Growth Plan</h2>
+            </div>
+            <div className="text-smarttext-navy font-bold">$599+<span className="text-sm font-normal text-smarttext-slate">/month</span></div>
+          </div>
+          
+          <p className="text-sm text-smarttext-slate mb-4">For high-volume businesses with advanced needs</p>
+          
+          <div className="mb-4">
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Everything in Pro</p>
+            </div>
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Multi-location management</p>
+            </div>
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Dedicated AI training & onboarding</p>
+            </div>
+            <div className="flex items-start mb-2">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">SMS campaign & broadcast tools</p>
+            </div>
+            <div className="flex items-start">
+              <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
+                <Check className="h-3 w-3 text-green-600" />
+              </div>
+              <p className="text-sm">Premium support</p>
+            </div>
+          </div>
+          
+          <Button 
+            variant="outline"
+            className="w-full"
+          >
+            Contact Sales
+          </Button>
         </Card>
         
         {/* Navigation */}

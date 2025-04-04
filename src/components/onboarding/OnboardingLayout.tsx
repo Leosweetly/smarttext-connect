@@ -29,7 +29,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
     { id: OnboardingStep.BUSINESS_INFO, label: 'Business Info' },
     { id: OnboardingStep.COMMUNICATION_SETUP, label: 'Communication' },
     { id: OnboardingStep.MESSAGE_TEMPLATES, label: 'Templates' },
-    { id: OnboardingStep.SUBSCRIPTION_SETUP, label: 'Subscription' },
+    { id: OnboardingStep.SUBSCRIPTION_SETUP, label: 'Get Started' },
   ];
 
   // Calculate the current step index
