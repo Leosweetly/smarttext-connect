@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
@@ -19,7 +18,6 @@ const SubscriptionSetup: React.FC = () => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Handle completion and checkout
   const handleComplete = async () => {
     console.log('SubscriptionSetup: handleComplete called');
     
@@ -32,22 +30,18 @@ const SubscriptionSetup: React.FC = () => {
     console.log('SubscriptionSetup: isSubmitting set to true');
     
     try {
-      // Check if user already has an active subscription
       if (user?.subscription?.status === 'active' || user?.subscription?.status === 'trialing') {
-        // Complete onboarding without checkout
-        console.log('SubscriptionSetup: user already has subscription, completing onboarding');
         completeOnboarding();
         return true;
       }
       
-      // Create a checkout session via API
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          businessId: user?.id, // Send the user/business ID
+          businessId: user?.id,
         }),
       });
       
@@ -58,14 +52,11 @@ const SubscriptionSetup: React.FC = () => {
         throw new Error(errorData.message || 'Failed to create checkout session');
       }
       
-      // Get the checkout URL from the response
       const { url } = await response.json();
       console.log('SubscriptionSetup: Redirecting to Stripe checkout URL:', url);
       
-      // Redirect to Stripe Checkout
       window.location.href = url;
-      return false; // Don't complete onboarding yet, wait for redirect and webhook
-      
+      return false;
     } catch (error) {
       console.error('SubscriptionSetup: Error creating checkout session:', error);
       toast({
@@ -80,19 +71,17 @@ const SubscriptionSetup: React.FC = () => {
     }
   };
   
-  // Activate the trial subscription (legacy method - now using API)
   const activateTrial = async () => {
     try {
       setIsProcessing(true);
       
-      // Create a checkout session via API
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          businessId: user?.id, // Send the user/business ID
+          businessId: user?.id,
         }),
       });
       
@@ -101,10 +90,8 @@ const SubscriptionSetup: React.FC = () => {
         throw new Error(errorData.message || 'Failed to create checkout session');
       }
       
-      // Get the checkout URL from the response
       const { url } = await response.json();
       
-      // Redirect to Stripe Checkout
       window.location.href = url;
       
       return true;
@@ -121,17 +108,14 @@ const SubscriptionSetup: React.FC = () => {
     }
   };
   
-  // If not authenticated, redirect to login
   if (!isLoading && !isAuthenticated) {
     return <Navigate to="/auth/login" />;
   }
   
-  // If loading, return null (loading state is handled by parent)
   if (isLoading) {
     return null;
   }
   
-  // Calculate trial end date (for display purposes)
   const trialEndDate = user?.subscription?.trialEndsAt 
     ? new Date(user.subscription.trialEndsAt)
     : addDays(new Date(), 14);
@@ -146,7 +130,6 @@ const SubscriptionSetup: React.FC = () => {
       showSkip={false}
     >
       <div className="space-y-6">
-        {/* Core Plan */}
         <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
@@ -195,7 +178,6 @@ const SubscriptionSetup: React.FC = () => {
           </Button>
         </Card>
         
-        {/* Pro Plan - Highlighted */}
         <Card className="p-6 border-2 border-smarttext-primary relative">
           <Badge 
             className="absolute -top-3 right-4 bg-smarttext-primary text-white font-medium px-3"
@@ -282,7 +264,6 @@ const SubscriptionSetup: React.FC = () => {
           </p>
         </Card>
         
-        {/* Growth Plan */}
         <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
@@ -333,11 +314,10 @@ const SubscriptionSetup: React.FC = () => {
             variant="outline"
             className="w-full"
           >
-            Contact Sales
+            Get Started
           </Button>
         </Card>
         
-        {/* Navigation */}
         <StepNavigation
           onNext={handleComplete}
           isNextDisabled={isProcessing}
@@ -345,7 +325,6 @@ const SubscriptionSetup: React.FC = () => {
           nextLabel={hasActiveSubscription ? "Complete Setup" : "Start Free Trial"}
         />
         
-        {/* Loading indicator */}
         {isProcessing && (
           <div className="text-center text-sm text-smarttext-slate mt-4">
             {hasActiveSubscription ? "Finalizing your subscription and completing setup..." : "Setting up your trial subscription..."}

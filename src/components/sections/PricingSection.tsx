@@ -46,7 +46,7 @@ const plans = [
       'Premium support'
     ],
     isPopular: false,
-    buttonText: 'Contact Sales',
+    buttonText: 'Get Started',
     icon: '🧠'
   }
 ];
