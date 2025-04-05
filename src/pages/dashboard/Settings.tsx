@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -9,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { User, Bell, Shield, CreditCard, Save, Calendar, CheckCircle, XCircle } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, Save, Calendar, CheckCircle, XCircle, Briefcase, Rocket } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { format, parseISO } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -72,7 +71,48 @@ const Settings: React.FC = () => {
   // Helper to format subscription plan name
   const formatPlanName = (plan: string | null) => {
     if (!plan) return 'No Plan';
-    return plan.charAt(0).toUpperCase() + plan.slice(1);
+    
+    // Map old plan names to new plan names
+    const planMap: {[key: string]: string} = {
+      'starter': 'Core',
+      'pro': 'Growth',
+      'growth': 'Pro',
+      'core': 'Core'
+    };
+    
+    return planMap[plan.toLowerCase()] || plan.charAt(0).toUpperCase() + plan.slice(1);
+  };
+  
+  // Helper to get plan price
+  const getPlanPrice = (plan: string | null) => {
+    if (!plan) return '';
+    
+    // Map plan names to prices
+    const priceMap: {[key: string]: string} = {
+      'starter': '$249',
+      'core': '$249',
+      'pro': '$349',
+      'growth': '$349',
+      'growth+': '$549',
+      'enterprise': '$549'
+    };
+    
+    return priceMap[plan.toLowerCase()] || '';
+  };
+  
+  // Helper to get plan icon
+  const getPlanIcon = (plan: string | null) => {
+    if (!plan) return null;
+    
+    // Map plan names to icons
+    const planLower = plan.toLowerCase();
+    if (planLower === 'core' || planLower === 'starter') {
+      return <Briefcase className="h-5 w-5 text-gray-600" />;
+    } else if (planLower === 'growth' || planLower === 'pro') {
+      return <Rocket className="h-5 w-5 text-blue-600" />;
+    } else {
+      return <Shield className="h-5 w-5 text-purple-600" />;
+    }
   };
   
   // Helper to get status badge styling
@@ -319,15 +359,25 @@ const Settings: React.FC = () => {
               <h3 className="text-lg font-medium text-smarttext-navy mb-4">Current Plan</h3>
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <span className="text-smarttext-primary font-bold">
-                      {formatPlanName(user?.subscription?.plan || null)} Plan
-                    </span>
-                    <span className="text-smarttext-slate ml-2">
-                      ({user?.subscription?.plan === 'pro' ? '$399/month' : 
-                        user?.subscription?.plan === 'core' ? '$249/month' : 
-                        user?.subscription?.plan === 'growth' ? '$599+/month' : 'Free'})
-                    </span>
+                  <div className="flex items-center">
+                    <div className="bg-gray-100 p-2 rounded-full mr-3">
+                      {user?.subscription?.plan ? 
+                        getPlanIcon(user.subscription.plan) :
+                        <Briefcase className="h-5 w-5 text-gray-600" />
+                      }
+                    </div>
+                    <div>
+                      <span className="text-smarttext-primary font-bold">
+                        {formatPlanName(user?.subscription?.plan || null)}
+                      </span>
+                      <span className="text-smarttext-slate ml-2">
+                        ({user?.subscription?.plan ? 
+                          (user.subscription.plan.toLowerCase() === 'core' ? '$249/month' : 
+                           user.subscription.plan.toLowerCase() === 'growth' ? '$349/month' : 
+                           '$549/month') 
+                          : 'Free'})
+                      </span>
+                    </div>
                   </div>
                   <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${getStatusBadge(user?.subscription?.status || null)}`}>
                     {getStatusText(user?.subscription?.status || null)}
@@ -353,32 +403,55 @@ const Settings: React.FC = () => {
                 )}
                 
                 <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span>
-                      {user?.subscription?.plan === 'pro' || user?.subscription?.plan === 'growth' ? 
-                        'Custom AI responses tailored to your business' : 
-                        'Auto-replies for missed calls'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span>
-                      {user?.subscription?.plan === 'pro' || user?.subscription?.plan === 'growth' ? 
-                        'Lead capture form via text' : 
-                        'Pre-built industry text templates'}
-                    </span>
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span>
-                      {user?.subscription?.plan === 'growth' ? 
-                        'Multi-location management' : 
-                        user?.subscription?.plan === 'pro' ? 
-                          'Built-in lead qualification flows' : 
-                          'Simple appointment booking via text'}
-                    </span>
-                  </div>
+                  {user?.subscription?.plan && (
+                    <>
+                      {(user.subscription.plan.toLowerCase() === 'pro' || user.subscription.plan.toLowerCase() === 'growth') && (
+                        <>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Multi-location management</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Dedicated AI training & onboarding</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>SMS campaign & broadcast tools</span>
+                          </div>
+                        </>
+                      )}
+                      
+                      {(user.subscription.plan.toLowerCase() === 'growth' || 
+                        user.subscription.plan.toLowerCase() === 'pro' || 
+                        user.subscription.plan.toLowerCase() === 'growth+') && (
+                        <>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Custom AI responses</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Lead capture form via text</span>
+                          </div>
+                        </>
+                      )}
+                      
+                      {(user.subscription.plan.toLowerCase() === 'core' || 
+                        user.subscription.plan.toLowerCase() === 'starter') && (
+                        <>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Auto-replies for missed calls</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                            <span>Pre-built industry text templates</span>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
                 
                 <div className="flex gap-2">

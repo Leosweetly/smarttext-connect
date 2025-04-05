@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
@@ -71,7 +72,7 @@ const SubscriptionSetup: React.FC = () => {
     }
   };
   
-  const activateTrial = async () => {
+  const activateTrial = async (planName: string) => {
     try {
       setIsProcessing(true);
       
@@ -82,6 +83,7 @@ const SubscriptionSetup: React.FC = () => {
         },
         body: JSON.stringify({
           businessId: user?.id,
+          planName: planName
         }),
       });
       
@@ -136,7 +138,7 @@ const SubscriptionSetup: React.FC = () => {
               <div className="bg-gray-100 p-2 rounded-full mr-3">
                 <Briefcase className="h-5 w-5 text-gray-600" />
               </div>
-              <h2 className="text-xl font-bold text-smarttext-navy">Core Plan</h2>
+              <h2 className="text-xl font-bold text-smarttext-navy">Core</h2>
             </div>
             <div className="text-smarttext-navy font-bold">$249<span className="text-sm font-normal text-smarttext-slate">/month</span></div>
           </div>
@@ -173,28 +175,22 @@ const SubscriptionSetup: React.FC = () => {
           <Button 
             variant="outline"
             className="w-full"
+            onClick={() => activateTrial('core')}
+            disabled={isProcessing}
           >
             Get Started
           </Button>
         </Card>
         
-        <Card className="p-6 border-2 border-smarttext-primary relative">
-          <Badge 
-            className="absolute -top-3 right-4 bg-smarttext-primary text-white font-medium px-3"
-          >
-            Most Popular
-          </Badge>
-          
+        <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <div className="bg-smarttext-primary/10 p-2 rounded-full mr-3">
-                <Shield className="h-5 w-5 text-smarttext-primary" />
+              <div className="bg-blue-100 p-2 rounded-full mr-3">
+                <Rocket className="h-5 w-5 text-blue-600" />
               </div>
-              <h2 className="text-xl font-bold text-smarttext-navy">Pro Plan</h2>
+              <h2 className="text-xl font-bold text-smarttext-navy">Growth</h2>
             </div>
-            <div className="bg-smarttext-primary/10 text-smarttext-primary px-2 py-1 rounded text-sm font-medium">
-              14-Day Trial
-            </div>
+            <div className="text-smarttext-navy font-bold">$349<span className="text-sm font-normal text-smarttext-slate">/month</span></div>
           </div>
           
           <p className="text-sm text-smarttext-slate mb-4">For growing teams ready to personalize customer communication</p>
@@ -232,47 +228,33 @@ const SubscriptionSetup: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex justify-between items-baseline mb-4">
-            <div className="text-2xl font-bold text-smarttext-navy">$399</div>
-            <div className="text-smarttext-slate text-sm">per month after trial</div>
-          </div>
-          
-          {hasActiveSubscription ? (
-            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-              <div className="flex items-center">
-                <Check className="h-5 w-5 text-green-600 mr-2" />
-                <div>
-                  <h3 className="font-medium text-green-800">Subscription Active</h3>
-                  <p className="text-sm text-green-700">
-                    Your Pro trial is active until {format(trialEndDate, 'MMMM d, yyyy')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <Button 
-              onClick={activateTrial}
-              className="w-full bg-smarttext-primary hover:bg-smarttext-hover"
-              disabled={isProcessing}
-            >
-              {isProcessing ? "Processing..." : "Activate 14-Day Free Trial"}
-            </Button>
-          )}
-          
-          <p className="text-xs text-center text-smarttext-slate mt-4">
-            You won't be charged during your trial. You can cancel anytime.
-          </p>
+          <Button 
+            variant="outline"
+            className="w-full"
+            onClick={() => activateTrial('growth')}
+            disabled={isProcessing}
+          >
+            Get Started
+          </Button>
         </Card>
         
-        <Card className="p-6 border border-gray-200 hover:border-gray-300 transition-all">
+        <Card className="p-6 border-2 border-smarttext-primary relative">
+          <Badge 
+            className="absolute -top-3 right-4 bg-smarttext-primary text-white font-medium px-3"
+          >
+            Most Popular
+          </Badge>
+          
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
-              <div className="bg-purple-100 p-2 rounded-full mr-3">
-                <Rocket className="h-5 w-5 text-purple-600" />
+              <div className="bg-smarttext-primary/10 p-2 rounded-full mr-3">
+                <Shield className="h-5 w-5 text-smarttext-primary" />
               </div>
-              <h2 className="text-xl font-bold text-smarttext-navy">Growth Plan</h2>
+              <h2 className="text-xl font-bold text-smarttext-navy">Pro</h2>
             </div>
-            <div className="text-smarttext-navy font-bold">$599+<span className="text-sm font-normal text-smarttext-slate">/month</span></div>
+            <div className="bg-smarttext-primary/10 text-smarttext-primary px-2 py-1 rounded text-sm font-medium">
+              14-Day Trial
+            </div>
           </div>
           
           <p className="text-sm text-smarttext-slate mb-4">For high-volume businesses with advanced needs</p>
@@ -282,7 +264,7 @@ const SubscriptionSetup: React.FC = () => {
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
               </div>
-              <p className="text-sm">Everything in Pro</p>
+              <p className="text-sm">Everything in Growth</p>
             </div>
             <div className="flex items-start mb-2">
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
@@ -310,12 +292,36 @@ const SubscriptionSetup: React.FC = () => {
             </div>
           </div>
           
-          <Button 
-            variant="outline"
-            className="w-full"
-          >
-            Get Started
-          </Button>
+          <div className="flex justify-between items-baseline mb-4">
+            <div className="text-2xl font-bold text-smarttext-navy">$549</div>
+            <div className="text-smarttext-slate text-sm">per month after trial</div>
+          </div>
+          
+          {hasActiveSubscription ? (
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+              <div className="flex items-center">
+                <Check className="h-5 w-5 text-green-600 mr-2" />
+                <div>
+                  <h3 className="font-medium text-green-800">Subscription Active</h3>
+                  <p className="text-sm text-green-700">
+                    Your Pro trial is active until {format(trialEndDate, 'MMMM d, yyyy')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <Button 
+              onClick={() => activateTrial('pro')}
+              className="w-full bg-smarttext-primary hover:bg-smarttext-hover"
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Processing..." : "Activate 14-Day Free Trial"}
+            </Button>
+          )}
+          
+          <p className="text-xs text-center text-smarttext-slate mt-4">
+            You won't be charged during your trial. You can cancel anytime.
+          </p>
         </Card>
         
         <StepNavigation

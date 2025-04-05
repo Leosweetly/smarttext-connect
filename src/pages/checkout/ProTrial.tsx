@@ -33,6 +33,7 @@ const ProTrial: React.FC = () => {
         },
         body: JSON.stringify({
           businessId: user?.id, // Send the user/business ID
+          planName: 'pro'
         }),
       });
       
@@ -75,7 +76,7 @@ const ProTrial: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center">
               <Shield className="h-5 w-5 text-smarttext-primary mr-2" />
-              <h2 className="text-xl font-bold text-smarttext-navy">Pro Plan</h2>
+              <h2 className="text-xl font-bold text-smarttext-navy">Pro</h2>
             </div>
             <div className="bg-smarttext-primary/10 text-smarttext-primary px-2 py-1 rounded text-sm font-medium">
               14-Day Trial
@@ -87,30 +88,30 @@ const ProTrial: React.FC = () => {
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
               </div>
-              <p className="text-sm">Custom AI responses tailored to your business</p>
+              <p className="text-sm">Multi-location management</p>
             </div>
             <div className="flex items-start mb-2">
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
               </div>
-              <p className="text-sm">Lead capture form via text</p>
+              <p className="text-sm">Dedicated AI training & onboarding</p>
             </div>
             <div className="flex items-start mb-2">
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
               </div>
-              <p className="text-sm">Built-in lead qualification flows</p>
+              <p className="text-sm">SMS campaign & broadcast tools</p>
             </div>
             <div className="flex items-start">
               <div className="mt-1 mr-3 bg-green-100 p-1 rounded-full">
                 <Check className="h-3 w-3 text-green-600" />
               </div>
-              <p className="text-sm">Priority support</p>
+              <p className="text-sm">Premium support</p>
             </div>
           </div>
           
           <div className="flex justify-between items-baseline mb-4">
-            <div className="text-2xl font-bold text-smarttext-navy">$399</div>
+            <div className="text-2xl font-bold text-smarttext-navy">$549</div>
             <div className="text-smarttext-slate text-sm">per month after trial</div>
           </div>
           

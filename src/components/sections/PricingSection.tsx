@@ -20,8 +20,8 @@ const plans = [
     icon: '💼'
   },
   {
-    name: 'Pro',
-    price: '$399',
+    name: 'Growth',
+    price: '$349',
     description: 'For growing teams ready to personalize customer communication',
     features: [
       'Everything in Core',
@@ -30,23 +30,23 @@ const plans = [
       'Built-in lead qualification flows',
       'Priority support'
     ],
-    isPopular: true,
-    buttonText: 'Most Popular',
+    isPopular: false,
+    buttonText: 'Get Started',
     icon: '🚀'
   },
   {
-    name: 'Growth',
-    price: '$599+',
+    name: 'Pro',
+    price: '$549',
     description: 'For high-volume businesses with advanced needs',
     features: [
-      'Everything in Pro',
+      'Everything in Growth',
       'Multi-location management',
       'Dedicated AI training & onboarding',
       'SMS campaign & broadcast tools',
       'Premium support'
     ],
-    isPopular: false,
-    buttonText: 'Get Started',
+    isPopular: true,
+    buttonText: 'Most Popular',
     icon: '🧠'
   }
 ];
