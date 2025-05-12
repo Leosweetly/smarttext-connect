@@ -7,7 +7,8 @@ export enum OnboardingStep {
   BUSINESS_INFO = 'business-info',
   COMMUNICATION_SETUP = 'communication-setup',
   MESSAGE_TEMPLATES = 'message-templates',
-  FEATURE_TOUR = 'feature-tour',
+  PRICING = 'pricing',
+  // FEATURE_TOUR step removed to streamline onboarding
 }
 
 // Define the shape of our onboarding progress

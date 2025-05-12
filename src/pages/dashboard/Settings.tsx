@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,16 +7,88 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { User, Bell, Shield, CreditCard, Save } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, Save, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { getSubscriptionStatus } from '@/services/stripe';
+import { SubscriptionStatus } from '@/services/airtable';
+import CancellationFeedback from '@/components/dashboard/CancellationFeedback';
 
 const Settings: React.FC = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [profileForm, setProfileForm] = useState({
-    firstName: 'John',
-    lastName: 'Smith',
-    email: 'john.smith@example.com',
-    phone: '(555) 123-4567',
-    company: 'Smith Auto Shop'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    company: ''
   });
+  
+  // Subscription state
+  const [subscription, setSubscription] = useState<{
+    active: boolean;
+    status?: SubscriptionStatus;
+    trialEnd?: Date;
+    planName?: string;
+    planId?: string;
+    subscriptionId?: string;
+    customerId?: string;
+  }>({
+    active: false
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
+  
+  // Load user profile data
+  useEffect(() => {
+    if (user) {
+      // Split name into first and last name (simple implementation)
+      const nameParts = (user.name || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      setProfileForm({
+        firstName,
+        lastName,
+        email: user.email || '',
+        phone: '', // Assuming phone is not in the user object
+        company: user.businessName || ''
+      });
+    }
+  }, [user]);
+  
+  // Load subscription data
+  useEffect(() => {
+    const loadSubscription = async () => {
+      if (!user) return;
+      
+      try {
+        setIsLoading(true);
+        
+        // Mock customer ID for demo purposes
+        const customerId = `cus_mock_${user.id}`;
+        
+        const subscriptionData = await getSubscriptionStatus(customerId);
+        
+        setSubscription({
+          ...subscriptionData,
+          customerId
+        });
+      } catch (error) {
+        console.error('Error loading subscription:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load subscription information',
+          variant: 'destructive'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSubscription();
+  }, [user, toast]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -230,20 +302,88 @@ const Settings: React.FC = () => {
             
             <div className="mb-8">
               <h3 className="text-lg font-medium text-smarttext-navy mb-4">Current Plan</h3>
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <span className="text-smarttext-primary font-bold">Pro Plan</span>
-                    <span className="text-smarttext-slate ml-2">($399/month)</span>
+              
+              {isLoading ? (
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center justify-center h-32">
+                  <p className="text-smarttext-slate">Loading subscription information...</p>
+                </div>
+              ) : subscription.active ? (
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <span className="text-smarttext-primary font-bold">{subscription.planName || 'Business Pro'}</span>
+                      <span className="text-smarttext-slate ml-2">($399/month)</span>
+                    </div>
+                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                      subscription.status === SubscriptionStatus.TRIALING 
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {subscription.status === SubscriptionStatus.TRIALING ? 'Trial' : 'Active'}
+                    </span>
                   </div>
-                  <span className="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Active</span>
+                  
+                  {subscription.status === SubscriptionStatus.TRIALING && subscription.trialEnd && (
+                    <div className="mb-3 flex items-center text-amber-600">
+                      <AlertCircle size={16} className="mr-1" />
+                      <p className="text-sm">
+                        Your trial ends on {subscription.trialEnd.toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <p className="text-sm text-smarttext-slate mb-4">
+                    {subscription.status === SubscriptionStatus.TRIALING 
+                      ? `Your first payment will be processed on ${subscription.trialEnd?.toLocaleDateString() || 'trial end'}`
+                      : `Your next billing date is ${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}`
+                    }
+                  </p>
+                  
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">Change Plan</Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-red-500 border-red-200 hover:bg-red-50"
+                      onClick={() => setShowCancellationModal(true)}
+                    >
+                      Cancel Subscription
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-sm text-smarttext-slate mb-4">Your next billing date is April 23, 2025</p>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">Change Plan</Button>
-                  <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-50">Cancel Subscription</Button>
+              ) : (
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <span className="text-smarttext-slate font-bold">No Active Subscription</span>
+                    </div>
+                    <span className="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-medium">Inactive</span>
+                  </div>
+                  <p className="text-sm text-smarttext-slate mb-4">
+                    You don't have an active subscription. Subscribe to access all features.
+                  </p>
+                  <Button className="bg-smarttext-primary hover:bg-smarttext-hover">
+                    Subscribe Now
+                  </Button>
                 </div>
-              </div>
+              )}
+              
+              {/* Cancellation Feedback Modal */}
+              {subscription.subscriptionId && subscription.customerId && (
+                <CancellationFeedback
+                  open={showCancellationModal}
+                  onOpenChange={setShowCancellationModal}
+                  subscriptionId={subscription.subscriptionId}
+                  customerId={subscription.customerId}
+                  onCancellationComplete={() => {
+                    setSubscription(prev => ({
+                      ...prev,
+                      active: false,
+                      status: SubscriptionStatus.CANCELED
+                    }));
+                  }}
+                />
+              )}
             </div>
             
             <div>

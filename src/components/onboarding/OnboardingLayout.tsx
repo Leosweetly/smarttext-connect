@@ -28,7 +28,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
     { id: OnboardingStep.BUSINESS_INFO, label: 'Business Info' },
     { id: OnboardingStep.COMMUNICATION_SETUP, label: 'Communication' },
     { id: OnboardingStep.MESSAGE_TEMPLATES, label: 'Templates' },
-    { id: OnboardingStep.FEATURE_TOUR, label: 'Tour' },
+    { id: OnboardingStep.PRICING, label: 'Pricing' },
   ];
 
   // Calculate the current step index

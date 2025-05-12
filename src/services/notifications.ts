@@ -110,3 +110,56 @@ export const sendOnboardingCompletionEmail = async (email: string, businessName:
     businessName,
   });
 };
+
+// Function to send a subscription cancellation confirmation
+export const sendCancellationConfirmationEmail = async (email: string, businessName: string): Promise<{ success: boolean }> => {
+  const subject = `Subscription Canceled - ${businessName}`;
+  const message = `
+    <h1>Subscription Canceled</h1>
+    <p>Hello ${businessName},</p>
+    <p>We're sorry to see you go. Your subscription to SmartText AI has been canceled as requested.</p>
+    <p>If you change your mind, you can reactivate your subscription at any time from your account settings.</p>
+    <p>We'd love to hear your feedback on why you decided to cancel. Your insights will help us improve our service.</p>
+    <p>Thank you for giving SmartText AI a try.</p>
+    <p>Best regards,<br>The SmartText AI Team</p>
+  `;
+  
+  return sendEmail({
+    to: email,
+    subject,
+    message,
+    businessName,
+  });
+};
+
+// Function to send a cancellation feedback request
+export const sendCancellationFeedbackRequestEmail = async (email: string, businessName: string, feedbackUrl?: string): Promise<{ success: boolean }> => {
+  const subject = `We'd Love Your Feedback - ${businessName}`;
+  const message = `
+    <h1>We'd Love Your Feedback</h1>
+    <p>Hello ${businessName},</p>
+    <p>We noticed you recently canceled your SmartText AI subscription. We're always looking to improve our service, and your feedback would be incredibly valuable to us.</p>
+    <p>Could you take a moment to let us know why you decided to cancel? Your insights will help us make SmartText AI better for everyone.</p>
+    ${feedbackUrl ? `<p><a href="${feedbackUrl}" style="display: inline-block; background-color: #4F46E5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Share Your Feedback</a></p>` : ''}
+    <p>Thank you for your time and for giving SmartText AI a try.</p>
+    <p>Best regards,<br>The SmartText AI Team</p>
+  `;
+  
+  return sendEmail({
+    to: email,
+    subject,
+    message,
+    businessName,
+  });
+};
+
+// Function to send a cancellation feedback request via SMS
+export const sendCancellationFeedbackRequestSMS = async (phone: string, businessName: string, feedbackUrl?: string): Promise<{ success: boolean }> => {
+  const message = `Hi ${businessName}, we noticed you canceled your SmartText AI subscription. We'd love to hear why so we can improve. ${feedbackUrl ? `Share your thoughts: ${feedbackUrl}` : 'Reply to this message with your feedback.'}`;
+  
+  return sendSMS({
+    to: phone,
+    message,
+    businessName,
+  });
+};

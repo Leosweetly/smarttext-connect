@@ -1,0 +1,58 @@
+.stripeForm {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.cardElementContainer {
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  border-radius: 4px;
+  background: white;
+}
+
+.submitButton {
+  width: 100%;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
+.submitButton:disabled {
+  background: #a5a5a5;
+  cursor: not-allowed;
+}
+
+.secureBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1rem;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: #dc2626;
+  margin-top: 8px;
+  font-size: 14px;
+}

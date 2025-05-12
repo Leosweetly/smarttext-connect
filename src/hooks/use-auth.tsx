@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { redirectToStripeCheckout } from '@/services/stripe';
 
 // Define the shape of our user object
 interface User {
@@ -93,8 +94,49 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem('smarttext_user', JSON.stringify(mockUser));
       setUser(mockUser);
       
-      // Redirect to onboarding instead of dashboard
-      navigate('/onboarding');
+      // Show loading state while redirecting to Stripe
+      const loadingElement = document.createElement('div');
+      loadingElement.id = 'stripe-redirect-loader';
+      loadingElement.style.position = 'fixed';
+      loadingElement.style.top = '0';
+      loadingElement.style.left = '0';
+      loadingElement.style.width = '100%';
+      loadingElement.style.height = '100%';
+      loadingElement.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      loadingElement.style.display = 'flex';
+      loadingElement.style.alignItems = 'center';
+      loadingElement.style.justifyContent = 'center';
+      loadingElement.style.zIndex = '9999';
+      loadingElement.innerHTML = `
+        <div style="text-align: center; color: white;">
+          <div style="font-size: 24px; margin-bottom: 16px;">Setting up your account...</div>
+          <div style="font-size: 16px;">Redirecting to payment...</div>
+        </div>
+      `;
+      document.body.appendChild(loadingElement);
+      
+      // Redirect to Stripe checkout
+      try {
+        const baseUrl = window.location.origin;
+        await redirectToStripeCheckout({
+          priceId: import.meta.env.VITE_STRIPE_PRICE_ID || 'price_business_pro',
+          customerEmail: email,
+          trialDays: 14,
+          successUrl: `${baseUrl}/checkout/success`,
+          cancelUrl: `${baseUrl}/checkout/cancel`,
+          metadata: {
+            userId: mockUser.id,
+            businessName,
+          },
+        });
+      } catch (stripeError) {
+        console.error('Stripe redirect failed:', stripeError);
+        // Remove loading element if there's an error
+        document.body.removeChild(loadingElement);
+        // Fallback to onboarding if Stripe redirect fails
+        navigate('/onboarding');
+        throw stripeError;
+      }
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;

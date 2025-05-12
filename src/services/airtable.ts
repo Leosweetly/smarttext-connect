@@ -2,6 +2,15 @@
 
 import { OnboardingProgress } from '@/hooks/use-onboarding';
 
+// Subscription status types
+export enum SubscriptionStatus {
+  ACTIVE = 'active',
+  TRIALING = 'trialing',
+  PAST_DUE = 'past_due',
+  CANCELED = 'canceled',
+  UNPAID = 'unpaid',
+}
+
 // Interface for business data to be saved to Airtable
 interface BusinessData {
   id?: string;
@@ -17,6 +26,40 @@ interface BusinessData {
     missedCall?: string;
     commonResponses?: string[];
   };
+  subscription?: {
+    customerId?: string;
+    subscriptionId?: string;
+    planId?: string;
+    planName?: string;
+    status?: SubscriptionStatus;
+    trialStart?: Date;
+    trialEnd?: Date;
+    canceledAt?: Date;
+    cancelReason?: string;
+    feedback?: string;
+  };
+}
+
+// Interface for subscription data
+interface SubscriptionData {
+  userId: string;
+  customerId: string;
+  subscriptionId: string;
+  planId: string;
+  planName: string;
+  status: SubscriptionStatus;
+  trialStart: Date;
+  trialEnd: Date;
+}
+
+// Interface for cancellation data
+interface CancellationData {
+  userId: string;
+  customerId: string;
+  subscriptionId: string;
+  canceledAt: Date;
+  reason?: string;
+  feedback?: string;
 }
 
 // Function to save business data to Airtable via backend API
@@ -148,6 +191,88 @@ export const resetBusinessOnboarding = async (): Promise<{ success: boolean }> =
     };
   } catch (error) {
     console.error('Error resetting business onboarding:', error);
+    return {
+      success: false,
+    };
+  }
+};
+
+// Function to log subscription data to Airtable
+export const logSubscriptionToAirtable = async (data: SubscriptionData): Promise<{ success: boolean; id?: string }> => {
+  try {
+    console.log('airtable.ts: logSubscriptionToAirtable called with:', data);
+    
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const apiUrl = `${baseUrl}/api/log-subscription`;
+    console.log('airtable.ts: sending data to API at:', apiUrl);
+    
+    // Make the API call
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    console.log('airtable.ts: API response status:', response.status);
+    
+    // Parse the response
+    const result = await response.json();
+    console.log('airtable.ts: API response data:', result);
+    
+    if (!response.ok) {
+      console.error('airtable.ts: API error:', result.error || 'Unknown error');
+      throw new Error(result.error || `API error: ${response.status}`);
+    }
+    
+    return {
+      success: true,
+      id: result.id,
+    };
+  } catch (error: any) {
+    console.error('airtable.ts: Error logging subscription to Airtable:', error.message || error);
+    return {
+      success: false,
+    };
+  }
+};
+
+// Function to log subscription cancellation to Airtable
+export const logCancellationToAirtable = async (data: CancellationData): Promise<{ success: boolean; id?: string }> => {
+  try {
+    console.log('airtable.ts: logCancellationToAirtable called with:', data);
+    
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const apiUrl = `${baseUrl}/api/cancel-subscription`;
+    console.log('airtable.ts: sending data to API at:', apiUrl);
+    
+    // Make the API call
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    
+    console.log('airtable.ts: API response status:', response.status);
+    
+    // Parse the response
+    const result = await response.json();
+    console.log('airtable.ts: API response data:', result);
+    
+    if (!response.ok) {
+      console.error('airtable.ts: API error:', result.error || 'Unknown error');
+      throw new Error(result.error || `API error: ${response.status}`);
+    }
+    
+    return {
+      success: true,
+      id: result.id,
+    };
+  } catch (error: any) {
+    console.error('airtable.ts: Error logging cancellation to Airtable:', error.message || error);
     return {
       success: false,
     };
