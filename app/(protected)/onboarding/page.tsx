@@ -3,9 +3,9 @@
 
 import { debug } from '@/lib/debug'
 import TrialActivationForm from './components/TrialActivationForm'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Button } from '@/components/ui/button'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../../../src/components/ui/hover-card'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../../src/components/ui/tooltip'
+import { Button } from '../../../src/components/ui/button'
 
 export default function Onboarding() {
   debug('Rendering onboarding page with trial activation form', {})
