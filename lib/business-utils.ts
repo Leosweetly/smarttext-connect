@@ -82,23 +82,35 @@ export async function createBusinessWithTrial(
     // Create a Supabase client
     const supabase = createClientSupabaseClient();
     
+    // Prepare the final insert data
+    const finalInsertData = {
+      user_id: validatedData.user_id,
+      name: validatedData.name,
+      trial_plan: validatedData.trial_plan,
+      trial_expiration_date: validatedData.trial_expiration_date,
+      subscription_tier: validatedData.subscription_tier,
+      twilio_number: validatedData.twilio_number
+    };
+    
+    console.log("[DEBUG] Final data being inserted into Supabase:", JSON.stringify(finalInsertData, null, 2));
+    
     // Insert the business record
     const { data, error } = await supabase
       .from('businesses')
-      .insert({
-        user_id: validatedData.user_id,
-        name: validatedData.name,
-        trial_plan: validatedData.trial_plan,
-        trial_expiration_date: validatedData.trial_expiration_date,
-        subscription_tier: validatedData.subscription_tier,
-        twilio_number: validatedData.twilio_number
-      })
+      .insert(finalInsertData)
       .select()
       .single();
     
     // Handle database errors
     if (error) {
-      console.error('Error inserting business record:', error);
+      console.error("=== SUPABASE INSERT ERROR ===");
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
+      console.error("Error details:", JSON.stringify(error.details, null, 2));
+      console.error("Error hint:", error.hint);
+      console.error("Data attempted to insert:", JSON.stringify(finalInsertData, null, 2));
+      console.error("Full error object:", JSON.stringify(error, null, 2));
+      
       return {
         success: false,
         error: error.message,
@@ -106,6 +118,8 @@ export async function createBusinessWithTrial(
         message: 'Failed to create business record'
       };
     }
+    
+    console.log("[DEBUG] Business record inserted successfully:", JSON.stringify(data, null, 2));
     
     // Return success with the created business data
     return {
