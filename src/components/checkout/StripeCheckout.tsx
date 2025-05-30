@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useStripe as useStripeContext } from '@/lib/stripe';
-import { Button } from '@/components/ui/button';
+import { useStripe as useStripeContext } from '../../lib/stripe';
 import { Shield } from 'lucide-react';
 import styles from './StripeCheckout.module.css';
 
@@ -27,17 +26,19 @@ function CheckoutForm({ userId, planId, onSuccess, onCancel }: {
 
     try {
       // Create checkout session
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-      const response = await fetch(`${baseUrl}/api/stripe/checkout-sessions`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId,
-          planId,
+          priceId: planId, // Map planId to priceId for API compatibility
+          customerEmail: 'user@example.com', // TODO: Get from user context
           successUrl: window.location.origin + '/checkout/success',
           cancelUrl: window.location.origin + '/checkout/cancel',
+          trialDays: 14,
         }),
       });
 

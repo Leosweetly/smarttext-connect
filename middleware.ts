@@ -66,5 +66,7 @@ export const config = {
     // Auth routes
     '/login',
     '/signup',
+    // Public routes that need auth checking
+    '/pricing',
   ],
 }

@@ -13,17 +13,23 @@ export default function Home() {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
           <Link
+            href="/pricing"
+            className="px-8 py-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-lg font-semibold"
+          >
+            Start Free Trial
+          </Link>
+          <Link
             href="/login"
-            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors"
           >
             Log In
           </Link>
-          <Link
-            href="/signup"
-            className="px-6 py-3 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 transition-colors"
-          >
-            Sign Up
-          </Link>
+        </div>
+        
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-500">
+            Already have an account? <Link href="/login" className="text-blue-600 hover:text-blue-700">Sign in</Link>
+          </p>
         </div>
         
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8">

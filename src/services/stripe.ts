@@ -35,8 +35,8 @@ export const redirectToStripeCheckout = async ({
     });
 
     // Get base URL from environment
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    const apiUrl = `${baseUrl}/api/stripe/checkout-sessions`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const apiUrl = `${baseUrl}/api/create-checkout-session`;
     console.log('stripe.ts: sending request to:', apiUrl);
 
     // Prepare request data
@@ -99,7 +99,7 @@ export const getSubscriptionStatus = async (customerId: string): Promise<{
   subscriptionId?: string;
 }> => {
   try {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     const response = await fetch(`${baseUrl}/api/stripe/subscriptions/${encodeURIComponent(customerId)}`, {
       method: 'GET',
       headers: {
@@ -152,7 +152,7 @@ export const cancelSubscription = async (
       options,
     });
 
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     const apiUrl = `${baseUrl}/api/stripe/subscriptions/${subscriptionId}/cancel`;
     console.log('stripe.ts: sending request to:', apiUrl);
 
@@ -215,7 +215,7 @@ export const logSubscriptionToAirtable = async (
   }
 ): Promise<{ success: boolean }> => {
   try {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     const response = await fetch(`${baseUrl}/api/airtable/subscriptions`, {
       method: 'POST',
       headers: {

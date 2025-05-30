@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { debug, measureAsyncPerformance } from '@/lib/debug'
 import { Database } from '@/types/database.types'
+import { Clock, Star, CheckCircle, AlertCircle } from 'lucide-react'
 
 type Business = Database['public']['Tables']['businesses']['Row']
 
@@ -11,6 +12,11 @@ export default function Dashboard() {
   const { user, business, isLoading } = useAuth()
   const [isLoadingData, setIsLoadingData] = useState(false)
   const [lastUpdated, setLastUpdated] = useState<string | null>(null)
+  const [trialInfo, setTrialInfo] = useState<{
+    isOnTrial: boolean
+    daysRemaining: number
+    trialEndDate: string | null
+  }>({ isOnTrial: false, daysRemaining: 0, trialEndDate: null })
 
   useEffect(() => {
     if (business) {
@@ -28,7 +34,24 @@ export default function Dashboard() {
         }
       }
 
+      // Check trial status
+      const checkTrialStatus = () => {
+        if (business.trial_expiration_date) {
+          const trialEndDate = new Date(business.trial_expiration_date)
+          const now = new Date()
+          const isOnTrial = trialEndDate > now && Boolean(business.trial_plan)
+          const daysRemaining = Math.ceil((trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+          
+          setTrialInfo({
+            isOnTrial,
+            daysRemaining: Math.max(0, daysRemaining),
+            trialEndDate: business.trial_expiration_date
+          })
+        }
+      }
+
       measureAsyncPerformance(() => Promise.resolve(formatLastUpdated()), 'dashboard.formatDate')
+      checkTrialStatus()
     }
   }, [business])
 
@@ -46,6 +69,47 @@ export default function Dashboard() {
 
   return (
     <div>
+      {/* Trial Status Banner */}
+      {trialInfo.isOnTrial && (
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="flex items-center justify-center w-12 h-12 bg-white bg-opacity-20 rounded-full mr-4">
+                <Star className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Pro Trial Active</h3>
+                <p className="text-blue-100">
+                  {trialInfo.daysRemaining} days remaining in your free trial
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="flex items-center text-blue-100 mb-2">
+                <Clock className="h-4 w-4 mr-1" />
+                <span className="text-sm">
+                  Expires {new Date(trialInfo.trialEndDate!).toLocaleDateString()}
+                </span>
+              </div>
+              <button className="bg-white text-blue-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-50 transition-colors">
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+          
+          {trialInfo.daysRemaining <= 3 && (
+            <div className="mt-4 p-3 bg-yellow-500 bg-opacity-20 rounded-md border border-yellow-300 border-opacity-30">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-yellow-200 mr-2" />
+                <p className="text-sm text-yellow-100">
+                  Your trial expires soon. Upgrade to continue using Pro features.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <h2 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h2>
         <p className="text-gray-600 mb-2">
