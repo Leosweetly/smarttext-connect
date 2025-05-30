@@ -7,52 +7,52 @@ import { Button } from '@/src/components/ui/button'
 
 const tiers = [
   {
-    id: 'basic',
-    name: 'Basic',
-    price: '$99',
+    id: 'core',
+    name: 'Core',
+    price: '$249',
     period: '/month',
-    description: 'Perfect for small businesses getting started',
+    description: 'For small businesses that need to stay responsive',
+    icon: '💼',
     features: [
-      'Auto-reply to missed calls',
-      'SMS inbox',
-      'Basic analytics',
+      'Auto-replies for missed calls',
+      'Pre-built industry text templates',
+      'Simple appointment booking via text',
       'Email support'
     ],
-    cta: 'Start Basic Plan'
+    cta: 'Get Started'
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    price: '$349',
+    period: '/month',
+    description: 'For growing teams ready to personalize customer communication',
+    icon: '🚀',
+    features: [
+      'Everything in Core',
+      'Custom AI responses tailored to your business',
+      'Lead capture form via text',
+      'Built-in lead qualification flows',
+      'Priority support'
+    ],
+    cta: 'Get Started',
+    isFeatured: true
   },
   {
     id: 'pro',
     name: 'Pro',
     price: '$549',
     period: '/month',
-    description: 'Most popular for growing businesses',
+    description: 'For high-volume businesses with advanced needs',
+    icon: '🧠',
     features: [
-      'Everything in Basic',
-      'Advanced analytics',
-      'Team inbox',
-      'Custom auto-replies',
-      'Priority support',
-      '14-day free trial'
+      'Everything in Growth',
+      'Multi-location management',
+      'Dedicated AI training & onboarding',
+      'SMS campaign & broadcast tools',
+      'Premium support'
     ],
-    cta: 'Start Free Trial',
-    isFeatured: true,
-    trialDays: 14
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '$999',
-    period: '/month',
-    description: 'Advanced features for large organizations',
-    features: [
-      'Everything in Pro',
-      'Dedicated account manager',
-      'Custom integrations',
-      'Advanced reporting',
-      'Multi-location support',
-      'White-label options'
-    ],
-    cta: 'Contact Sales'
+    cta: 'Get Started'
   }
 ]
 
@@ -63,15 +63,12 @@ export default function Pricing() {
   const handleSelectPlan = (tierId: string) => {
     setSelectedTier(tierId)
     
-    if (tierId === 'pro') {
-      // Redirect to signup for free trial
-      router.push('/signup?plan=pro&trial=true')
-    } else if (tierId === 'enterprise') {
+    if (tierId === 'enterprise') {
       // For enterprise, could redirect to contact form
       router.push('/contact')
     } else {
-      // For basic, redirect to checkout
-      router.push(`/signup?plan=${tierId}`)
+      // Redirect to checkout for all paid plans
+      router.push(`/checkout?plan=${tierId}`)
     }
   }
 
@@ -84,7 +81,7 @@ export default function Pricing() {
             Choose Your Plan
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            Select the plan that works best for your business. Start with our 14-day free trial.
+            Select the plan that works best for your business. All plans include a 14-day free trial.
           </p>
         </div>
 
@@ -109,7 +106,10 @@ export default function Pricing() {
               )}
 
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900">{tier.name}</h3>
+                <div className="flex items-center mb-4">
+                  <span className="text-3xl mr-3">{tier.icon}</span>
+                  <h3 className="text-2xl font-bold text-gray-900">{tier.name}</h3>
+                </div>
                 <p className="mt-2 text-gray-600">{tier.description}</p>
                 
                 <div className="mt-6">
@@ -121,11 +121,7 @@ export default function Pricing() {
                       {tier.period}
                     </span>
                   </div>
-                  {tier.trialDays && (
-                    <p className="mt-2 text-sm text-green-600 font-medium">
-                      {tier.trialDays}-day free trial included
-                    </p>
-                  )}
+
                 </div>
 
                 <ul className="mt-8 space-y-4">
@@ -163,7 +159,7 @@ export default function Pricing() {
                 What happens after my free trial?
               </h3>
               <p className="text-gray-600">
-                After your 14-day trial ends, you'll automatically be subscribed to the Pro plan at $549/month. You can downgrade or cancel anytime before the trial ends.
+                After your 14-day trial ends, you'll be charged for your selected plan. You can cancel anytime before the trial ends.
               </p>
             </div>
             <div>
@@ -202,10 +198,10 @@ export default function Pricing() {
             Join thousands of businesses using SmartText Connect
           </p>
           <Button
-            onClick={() => handleSelectPlan('pro')}
+            onClick={() => handleSelectPlan('growth')}
             className="mt-8 bg-blue-600 text-white hover:bg-blue-700 px-8 py-3 text-lg"
           >
-            Start Your Free Trial
+            Get Started
           </Button>
         </div>
       </div>
