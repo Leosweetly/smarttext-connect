@@ -1,16 +1,4 @@
-import React from 'react';
-import { HeroSection } from '@/components/sections/HeroSection';
-import { FeaturesSection } from '@/components/sections/FeaturesSection';
-import { PricingSection } from '@/components/sections/PricingSection';
-import { CtaSection } from '@/components/sections/CtaSection';
-
+// Legacy index, no longer routed. See src/App.tsx for the SmartOps landing page.
 export default function Index() {
-  return (
-    <div className="min-h-screen">
-      <HeroSection />
-      <FeaturesSection />
-      <PricingSection />
-      <CtaSection />
-    </div>
-  );
+  return null;
 }
