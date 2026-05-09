@@ -50,13 +50,6 @@ const SetupChecklist: React.FC<SetupChecklistProps> = ({
       step: OnboardingStep.MESSAGE_TEMPLATES,
       isComplete: isStepComplete(OnboardingStep.MESSAGE_TEMPLATES),
     },
-    {
-      id: 'feature-tour',
-      label: 'Complete Feature Tour',
-      description: 'Learn how to use the dashboard effectively',
-      step: OnboardingStep.FEATURE_TOUR,
-      isComplete: isStepComplete(OnboardingStep.FEATURE_TOUR),
-    },
   ];
 
   // Calculate completion percentage

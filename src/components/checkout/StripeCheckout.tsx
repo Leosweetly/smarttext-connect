@@ -26,7 +26,7 @@ function CheckoutForm({ userId, planId, onSuccess, onCancel }: {
 
     try {
       // Create checkout session
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+      const baseUrl = (import.meta.env.VITE_API_BASE_URL as string) || '';
       const response = await fetch(`${baseUrl}/api/create-checkout-session`, {
         method: 'POST',
         headers: {
